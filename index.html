@@ -35,7 +35,6 @@ body{
 header{
   text-align:center;
   padding:50px 20px;
-  animation:fadeDown .8s ease;
 }
 
 .logo{
@@ -54,7 +53,6 @@ header{
   padding:28px;
   max-width:980px;
   margin:25px auto;
-  animation:fadeUp .8s ease;
   transition:.3s;
 }
 
@@ -101,7 +99,6 @@ button{
   padding:35px;
   text-align:center;
   max-width:420px;
-  animation:fadeUp .6s ease;
 }
 
 .profile-banner{
@@ -123,23 +120,48 @@ button{
   left:30px;
 }
 
-.profile-info{
-  margin-top:10px;
-}
-
 .logout{
   float:right;
   background:#1a1a1a;
 }
 
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:none}
+.review-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
 }
 
-@keyframes fadeDown{
-  from{opacity:0;transform:translateY(-20px)}
-  to{opacity:1;transform:none}
+.review{
+  text-align:center;
+  padding:20px;
+  border-radius:18px;
+  border:1px solid var(--border);
+}
+
+.review img{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  margin-bottom:10px;
+}
+
+footer{
+  margin-top:60px;
+  padding:40px 20px;
+  background:#080808;
+  border-top:1px solid var(--border);
+}
+
+.footer-grid{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:30px;
+}
+
+footer h4{
+  margin-bottom:10px;
 }
 </style>
 </head>
@@ -161,47 +183,60 @@ button{
 
 <div class="glass" id="perfil" style="display:none">
   <button class="logout" onclick="logout()">Logout</button>
+  <a href="https://discord.gg/BaTeCB6E3G" target="_blank">
+    <button>Acessar Discord</button>
+  </a>
 
   <div class="profile-banner" id="banner">
     <img id="avatar" class="avatar">
   </div>
 
-  <div class="profile-info">
-    <h2 id="user"></h2>
-    <p>ID: <span id="userid"></span></p>
-    <p>Data de entrada na FirePG: <b id="entrada"></b></p>
-    <p>Solicitações já feitas: <b id="total"></b></p>
-    <p><small>Pagamentos são realizados somente via PIX e diretamente no Discord.</small></p>
+  <h2 id="user"></h2>
+  <p>ID: <span id="userid"></span></p>
+  <p>Data de entrada na FirePG: <b id="entrada"></b></p>
+  <p>Solicitações já feitas: <b id="total"></b></p>
+  <small>Pagamentos são feitos somente via PIX e diretamente no Discord.</small>
+</div>
+
+<div class="glass">
+  <h2>Avaliações</h2>
+  <div class="review-grid">
+    <div class="review">
+      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=A" alt="">
+      <b>Cliente A</b>
+      <p>★★★★☆ 4,5</p>
+    </div>
+    <div class="review">
+      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=B" alt="">
+      <b>Cliente B</b>
+      <p>★★★★☆ 4,0</p>
+    </div>
+    <div class="review">
+      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=C" alt="">
+      <b>Cliente C</b>
+      <p>★★★★★ 5,0</p>
+    </div>
   </div>
 </div>
 
-<div class="glass">
-  <h2>Solicitar Bot</h2>
-  <input id="descricao" placeholder="Descrição do bot">
-  <input id="linguagem" placeholder="Linguagem (JS, Java, Python)">
-
-  <select id="estilo">
-    <option value="">Selecione o estilo</option>
-    <option>Moderação</option>
-    <option>Economia</option>
-    <option>Utilidade</option>
-    <option>Comunidade</option>
-  </select>
-
-  <small>Outros estilos apenas falando diretamente com o técnico (caso tenha plano).</small>
-
-  <button onclick="enviarPedido()">Enviar Solicitação</button>
-</div>
-
-<div class="glass">
-  <h2>Documentação</h2>
-
-  <h3>Termos de Serviço</h3>
-  <p>O desenvolvimento segue exatamente o que foi solicitado. Alterações após início podem gerar custos adicionais.</p>
-
-  <h3>Política de Reembolso</h3>
-  <p>Reembolsos somente antes do início do desenvolvimento. Após iniciado, não há reembolso.</p>
-</div>
+<footer>
+  <div class="footer-grid">
+    <div>
+      <h4>HOSPEDAGENS</h4>
+      Bot — Discloud<br>
+      Site — Vercel
+    </div>
+    <div>
+      <h4>LINKS DIRETOS</h4>
+      <a href="https://discord.gg/BaTeCB6E3G" target="_blank">Discord</a><br>
+      <a href="https://firepg.vercel.app/" target="_blank">Site</a>
+    </div>
+    <div>
+      <h4>SUPORTE</h4>
+      E-mail: firepg2026@outlook.com.br
+    </div>
+  </div>
+</footer>
 
 <script>
 const CONFIG={
@@ -239,67 +274,21 @@ if(token){
   }).then(r=>r.json()).then(u=>{
     localStorage.setItem("discord_user",JSON.stringify(u));
 
-    if(!localStorage.getItem("entrada")){
+    if(!localStorage.getItem("entrada"))
       localStorage.setItem("entrada",new Date().toLocaleDateString("pt-BR"));
-    }
 
     document.getElementById("lock").style.display="none";
     document.getElementById("perfil").style.display="block";
 
-    document.getElementById("user").innerText=u.username+"#"+u.discriminator;
-    document.getElementById("userid").innerText=u.id;
-    document.getElementById("entrada").innerText=localStorage.getItem("entrada");
-    document.getElementById("total").innerText=localStorage.getItem("total")||0;
+    user.innerText=u.username+"#"+u.discriminator;
+    userid.innerText=u.id;
+    entrada.innerText=localStorage.getItem("entrada");
+    total.innerText=localStorage.getItem("total")||0;
 
-    document.getElementById("avatar").src=
-      `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
-
-    if(u.banner){
-      document.getElementById("banner").style.backgroundImage=
-        `url(https://cdn.discordapp.com/banners/${u.id}/${u.banner}.png?size=1024)`;
-    }else{
-      document.getElementById("banner").style.background="#111";
-    }
-  });
-}
-
-function enviarPedido(){
-  const last=localStorage.getItem("last_request");
-  if(last && Date.now()-last<3600000)
-    return alert("Você só pode solicitar a cada 1 hora.");
-
-  const u=JSON.parse(localStorage.getItem("discord_user"));
-  if(!u) return;
-
-  fetch(CONFIG.DISCORD_WEBHOOK_URL,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      embeds:[{
-        title:"Nova Solicitação — FirePG",
-        color:16729344,
-        fields:[
-          {name:"Usuário",value:`${u.username}#${u.discriminator}`},
-          {name:"ID",value:u.id},
-          {name:"Estilo",value:estilo.value},
-          {name:"Linguagem",value:linguagem.value},
-          {name:"Descrição",value:descricao.value}
-        ]
-      }],
-      components:[{
-        type:1,
-        components:[{
-          type:2,
-          style:5,
-          label:"Ver perfil do usuário",
-          url:"https://discord.com/users/"+u.id
-        }]
-      }]
-    })
-  }).then(()=>{
-    localStorage.setItem("last_request",Date.now());
-    localStorage.setItem("total",(Number(localStorage.getItem("total")||0)+1));
-    location.reload();
+    avatar.src=`https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
+    banner.style.background=u.banner
+      ?`url(https://cdn.discordapp.com/banners/${u.id}/${u.banner}.png?size=1024)`
+      :"#111";
   });
 }
 </script>
