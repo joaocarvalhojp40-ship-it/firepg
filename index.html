@@ -22,6 +22,7 @@
   --orange:#ff7a18;
   --glass:rgba(255,255,255,.07);
   --border:rgba(255,255,255,.15);
+  --gray:#9a9a9a;
 }
 
 *{box-sizing:border-box;font-family:Inter,Arial}
@@ -32,17 +33,24 @@ body{
   color:#fff;
 }
 
-header{
-  text-align:center;
-  padding:50px 20px;
-}
-
+/* ===== FIRE LOGO ===== */
 .logo{
-  font-size:3.2rem;
+  font-size:3.3rem;
   font-weight:900;
   background:linear-gradient(90deg,var(--red),var(--orange));
   -webkit-background-clip:text;
   color:transparent;
+  animation:fire 2.5s infinite alternate;
+}
+
+@keyframes fire{
+  from{text-shadow:0 0 10px rgba(255,90,40,.4)}
+  to{text-shadow:0 0 22px rgba(255,120,60,.8)}
+}
+
+header{
+  text-align:center;
+  padding:50px 20px;
 }
 
 .glass{
@@ -51,7 +59,7 @@ header{
   border:1px solid var(--border);
   border-radius:22px;
   padding:28px;
-  max-width:980px;
+  max-width:1000px;
   margin:25px auto;
   transition:.3s;
 }
@@ -81,6 +89,7 @@ button{
   cursor:pointer;
 }
 
+/* ===== LOCK ===== */
 #lock{
   position:fixed;
   inset:0;
@@ -98,9 +107,9 @@ button{
   border-radius:22px;
   padding:35px;
   text-align:center;
-  max-width:420px;
 }
 
+/* ===== PROFILE ===== */
 .profile-banner{
   height:160px;
   border-radius:18px;
@@ -125,9 +134,10 @@ button{
   background:#1a1a1a;
 }
 
+/* ===== REVIEWS ===== */
 .review-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:20px;
 }
 
@@ -142,14 +152,15 @@ button{
   width:80px;
   height:80px;
   border-radius:50%;
-  margin-bottom:10px;
 }
 
+/* ===== FOOTER ===== */
 footer{
   margin-top:60px;
   padding:40px 20px;
   background:#080808;
   border-top:1px solid var(--border);
+  color:var(--gray);
 }
 
 .footer-grid{
@@ -160,9 +171,7 @@ footer{
   gap:30px;
 }
 
-footer h4{
-  margin-bottom:10px;
-}
+footer b{color:#fff}
 </style>
 </head>
 
@@ -171,7 +180,7 @@ footer h4{
 <div id="lock">
   <div class="lock-box">
     <h2>Acesso restrito</h2>
-    <p>Login obrigatório com Discord para usar a FirePG.</p>
+    <p>É obrigatório entrar com Discord para usar a FirePG.</p>
     <button onclick="login()">Entrar com Discord</button>
   </div>
 </div>
@@ -181,11 +190,10 @@ footer h4{
   <p>Bots profissionais para Discord</p>
 </header>
 
+<!-- PERFIL -->
 <div class="glass" id="perfil" style="display:none">
   <button class="logout" onclick="logout()">Logout</button>
-  <a href="https://discord.gg/BaTeCB6E3G" target="_blank">
-    <button>Acessar Discord</button>
-  </a>
+  <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Acessar Discord</button></a>
 
   <div class="profile-banner" id="banner">
     <img id="avatar" class="avatar">
@@ -198,42 +206,75 @@ footer h4{
   <small>Pagamentos são feitos somente via PIX e diretamente no Discord.</small>
 </div>
 
+<!-- SOLICITAÇÃO -->
+<div class="glass">
+  <h2>Solicitar Bot</h2>
+  <input id="descricao" placeholder="Descrição do bot">
+  <input id="linguagem" placeholder="Linguagem (JS, Java, Python)">
+
+  <select id="estilo">
+    <option value="">Selecione o estilo</option>
+    <option>Moderação</option>
+    <option>Economia</option>
+    <option>Utilidade</option>
+    <option>Comunidade</option>
+  </select>
+
+  <small>Outros estilos somente falando diretamente com o técnico (caso tenha plano).</small>
+  <button onclick="enviarPedido()">Enviar Solicitação</button>
+</div>
+
+<!-- AVALIAÇÕES -->
 <div class="glass">
   <h2>Avaliações</h2>
   <div class="review-grid">
     <div class="review">
-      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=A" alt="">
-      <b>Cliente A</b>
+      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Jorge">
+      <b>Jorge</b>
       <p>★★★★☆ 4,5</p>
+      <small>Atendimento rápido e bot muito bem feito.</small>
     </div>
     <div class="review">
-      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=B" alt="">
-      <b>Cliente B</b>
+      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Maria">
+      <b>Maria</b>
       <p>★★★★☆ 4,0</p>
+      <small>Gostei bastante da qualidade e suporte.</small>
     </div>
     <div class="review">
-      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=C" alt="">
-      <b>Cliente C</b>
+      <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Augusto">
+      <b>Augusto</b>
       <p>★★★★★ 5,0</p>
+      <small>Excelente, superou minhas expectativas.</small>
     </div>
   </div>
+</div>
+
+<!-- DOCUMENTAÇÃO -->
+<div class="glass">
+  <h2>Documentação</h2>
+  <p><b>Termos de Serviço:</b> Ao contratar, o cliente concorda que o serviço é digital e personalizado.</p>
+  <p><b>Reembolso:</b> Apenas antes do início do desenvolvimento.</p>
+  <p><b>Entrega:</b> Prazos variam conforme complexidade.</p>
+  <p><b>Suporte:</b> Fornecido exclusivamente via Discord.</p>
+  <p><b>Pagamentos:</b> Realizados somente via PIX.</p>
+  <p><b>Uso indevido:</b> Bots não podem violar ToS do Discord.</p>
 </div>
 
 <footer>
   <div class="footer-grid">
     <div>
-      <h4>HOSPEDAGENS</h4>
+      <b>HOSPEDAGENS</b><br>
       Bot — Discloud<br>
       Site — Vercel
     </div>
     <div>
-      <h4>LINKS DIRETOS</h4>
-      <a href="https://discord.gg/BaTeCB6E3G" target="_blank">Discord</a><br>
-      <a href="https://firepg.vercel.app/" target="_blank">Site</a>
+      <b>LINKS DIRETOS</b><br>
+      Discord — https://discord.gg/BaTeCB6E3G<br>
+      Site — https://firepg.vercel.app/
     </div>
     <div>
-      <h4>SUPORTE</h4>
-      E-mail: firepg2026@outlook.com.br
+      <b>SUPORTE</b><br>
+      E-mail: firepg@outlook.com.br
     </div>
   </div>
 </footer>
@@ -246,8 +287,7 @@ const CONFIG={
 };
 
 function login(){
-  location.href=
-  "https://discord.com/oauth2/authorize?client_id="+
+  location.href="https://discord.com/oauth2/authorize?client_id="+
   CONFIG.DISCORD_CLIENT_ID+
   "&redirect_uri="+encodeURIComponent(CONFIG.OAUTH_REDIRECT)+
   "&response_type=token&scope=identify";
@@ -273,12 +313,11 @@ if(token){
     headers:{Authorization:"Bearer "+token}
   }).then(r=>r.json()).then(u=>{
     localStorage.setItem("discord_user",JSON.stringify(u));
-
     if(!localStorage.getItem("entrada"))
       localStorage.setItem("entrada",new Date().toLocaleDateString("pt-BR"));
 
-    document.getElementById("lock").style.display="none";
-    document.getElementById("perfil").style.display="block";
+    lock.style.display="none";
+    perfil.style.display="block";
 
     user.innerText=u.username+"#"+u.discriminator;
     userid.innerText=u.id;
@@ -289,6 +328,46 @@ if(token){
     banner.style.background=u.banner
       ?`url(https://cdn.discordapp.com/banners/${u.id}/${u.banner}.png?size=1024)`
       :"#111";
+  });
+}
+
+function enviarPedido(){
+  const last=localStorage.getItem("last_request");
+  if(last && Date.now()-last<3600000)
+    return alert("Você só pode solicitar a cada 1 hora.");
+
+  const u=JSON.parse(localStorage.getItem("discord_user"));
+  if(!u) return;
+
+  fetch(CONFIG.DISCORD_WEBHOOK_URL,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({
+      embeds:[{
+        title:"Nova Solicitação — FirePG",
+        color:16729344,
+        fields:[
+          {name:"Usuário",value:`${u.username}#${u.discriminator}`},
+          {name:"ID",value:u.id},
+          {name:"Estilo",value:estilo.value},
+          {name:"Linguagem",value:linguagem.value},
+          {name:"Descrição",value:descricao.value}
+        ]
+      }],
+      components:[{
+        type:1,
+        components:[{
+          type:2,
+          style:5,
+          label:"Ver perfil do usuário",
+          url:"https://discord.com/users/"+u.id
+        }]
+      }]
+    })
+  }).then(()=>{
+    localStorage.setItem("last_request",Date.now());
+    localStorage.setItem("total",(Number(localStorage.getItem("total")||0)+1));
+    location.reload();
   });
 }
 </script>
