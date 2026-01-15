@@ -1,311 +1,241 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FirePG | Code Mastery</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
-    
-    <style>
-        /* --- CSS: Variáveis e Reset --- */
-        :root {
-            --primary: #ff4500; /* Laranja Avermelhado */
-            --secondary: #ff8c00; /* Laranja */
-            --dark: #0a0a0a;
-            --glass-bg: rgba(20, 20, 20, 0.6);
-            --glass-border: rgba(255, 69, 0, 0.3);
-            --text-color: #ffffff;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FirePG | Code Mastery</title>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        body {
-            background-color: var(--dark);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(255, 69, 0, 0.2) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(255, 140, 0, 0.15) 0%, transparent 20%);
-            color: var(--text-color);
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
 
-        /* --- Glassmorphism Classes --- */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            border-radius: 16px;
-        }
+<style>
+:root{
+--primary:#ff4500;
+--secondary:#ff8c00;
+--dark:#0a0a0a;
+--glass:rgba(20,20,20,.65);
+--border:rgba(255,69,0,.35);
+--text:#fff;
+}
 
-        /* --- Header --- */
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 1rem 5%;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-        }
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI}
 
-        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        
-        .nav-links a { color: #fff; text-decoration: none; margin-left: 20px; transition: 0.3s; font-size: 0.9rem; }
-        .nav-links a:hover { color: var(--primary); }
+body{
+background:var(--dark);
+color:var(--text);
+min-height:100vh;
+}
 
-        .btn-discord {
-            background: linear-gradient(45deg, #5865F2, #4752C4);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .btn-discord:hover { transform: scale(1.05); }
+.glass{
+background:var(--glass);
+backdrop-filter:blur(12px);
+border:1px solid var(--border);
+border-radius:16px;
+padding:20px;
+}
 
-        .lang-switch { cursor: pointer; border: 1px solid var(--primary); padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; }
+header{
+position:fixed;
+top:0;
+width:100%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 5%;
+background:#000c;
+z-index:100;
+}
 
-        /* --- Layout Principal --- */
-        .container { max-width: 1200px; margin: 100px auto 20px; padding: 0 20px; }
+.logo{font-weight:bold;font-size:1.4rem;color:var(--primary)}
 
-        /* --- Hero Section --- */
-        .hero { text-align: center; padding: 60px 0; }
-        .hero h1 { font-size: 3rem; margin-bottom: 20px; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero p { font-size: 1.2rem; color: #ccc; max-width: 700px; margin: 0 auto 30px; }
+nav a{
+color:#fff;
+margin-left:20px;
+text-decoration:none;
+font-size:.9rem;
+}
 
-        /* --- Profile Section (Hidden by default) --- */
-        #user-profile { display: none; text-align: center; margin-bottom: 40px; padding: 20px; }
-        .avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; }
-        .plan-badge { background: var(--primary); padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; margin-top: 10px; display: inline-block; }
+nav a:hover{color:var(--primary)}
 
-        /* --- Plans Grid --- */
-        .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px; }
-        .plan-card { padding: 30px; text-align: center; position: relative; overflow: hidden; transition: 0.3s; }
-        .plan-card:hover { transform: translateY(-10px); border-color: var(--secondary); }
-        .price { font-size: 2rem; font-weight: bold; margin: 20px 0; color: var(--secondary); }
-        .benefits { list-style: none; text-align: left; margin: 20px 0; color: #ddd; }
-        .benefits li { margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .benefits li::before { content: "🔥"; font-size: 0.8rem; }
+.btn{
+padding:8px 16px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
 
-        /* --- Content Areas --- */
-        .content-section { display: none; margin-top: 40px; padding: 30px; }
-        .content-section.active { display: block; }
-        .lang-icons { font-size: 3rem; margin-bottom: 20px; display: flex; gap: 20px; justify-content: center; }
+.discord{background:#5865f2;color:#fff}
+.hidden{display:none}
 
-        /* --- Documentation --- */
-        .doc-section { margin-top: 60px; padding: 40px; font-size: 0.9rem; color: #aaa; }
-        .doc-section h3 { color: var(--primary); margin-bottom: 10px; }
+.container{
+max-width:1200px;
+margin:100px auto;
+padding:20px;
+}
 
-        /* --- Footer --- */
-        footer { text-align: center; padding: 20px; color: #666; font-size: 0.8rem; margin-top: 40px; border-top: 1px solid #333; }
+.hero{text-align:center;margin-bottom:50px}
+.hero h1{
+font-size:3rem;
+background:linear-gradient(to right,var(--primary),var(--secondary));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
 
-        /* --- Utility --- */
-        .hidden { display: none !important; }
-    </style>
+.section{margin-top:40px}
+
+.lesson{
+margin-top:15px;
+padding:15px;
+background:#0006;
+border-radius:10px;
+}
+
+code,pre{
+background:#000;
+padding:10px;
+display:block;
+border-radius:8px;
+overflow-x:auto;
+color:#0f0;
+font-size:.85rem;
+}
+</style>
 </head>
+
 <body>
 
-    <header class="glass-panel" style="border-radius: 0 0 16px 16px; border-top: none;">
-        <div class="logo">🔥 FirePG</div>
-        <nav class="nav-links">
-            <a href="#" onclick="showSection('home')" id="nav-home">Início</a>
-            <a href="#" onclick="showSection('learning')" id="nav-learn">Aulas</a>
-            <a href="#" onclick="showSection('docs')" id="nav-docs">Docs</a>
-        </nav>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="lang-switch" onclick="toggleLanguage()">🇺🇸 / 🇧🇷</button>
-            <button id="login-btn" class="btn-discord" onclick="loginDiscord()">Login Discord</button>
-            <button id="logout-btn" class="btn-discord hidden" style="background: #333;" onclick="logout()">Sair</button>
-        </div>
-    </header>
+<header>
+<div class="logo">🔥 FirePG</div>
+<nav>
+<a href="#" onclick="show('home')">Início</a>
+<a href="#" onclick="show('learn')">Aulas</a>
+<a href="#" onclick="show('docs')">Docs</a>
+</nav>
+<button id="login" class="btn discord" onclick="login()">Login Discord</button>
+<button id="logout" class="btn hidden" onclick="logout()">Sair</button>
+</header>
 
-    <div class="container">
-        
-        <div id="user-profile" class="glass-panel">
-            <img id="user-avatar" class="avatar" src="" alt="User Avatar">
-            <h2 id="user-name">Usuário</h2>
-            <div id="user-plan" class="plan-badge">Plano: Visitante</div>
-            <p style="margin-top: 10px; color: #aaa; font-size: 0.9rem;" id="msg-status">Conecte-se para ver seus benefícios.</p>
-        </div>
+<div class="container">
 
-        <div id="home-section">
-            <div class="hero">
-                <h1 id="hero-title">Domine o Código</h1>
-                <p id="hero-desc">Python, JavaScript e Java. Tutoriais exclusivos e comunidade ativa.</p>
-            </div>
+<!-- PERFIL -->
+<div id="profile" class="glass hidden">
+<h2 id="username">Usuário</h2>
+<p id="plan">Plano: -</p>
+</div>
 
-            <div class="plans-grid">
-                <div class="plan-card glass-panel">
-                    <h3>Faísca (Spark)</h3>
-                    <div class="price">R$ 1,50</div>
-                    <ul class="benefits">
-                        <li id="p1-b1">Acesso Docs Python</li>
-                        <li id="p1-b2">Canal Básico Discord</li>
-                    </ul>
-                    <small>Pagamento Único</small>
-                </div>
-                <div class="plan-card glass-panel" style="border-color: var(--secondary);">
-                    <h3>Chama (Flame)</h3>
-                    <div class="price">R$ 4,50</div>
-                    <ul class="benefits">
-                        <li>Python + JS Full</li>
-                        <li>Suporte Básico</li>
-                        <li>Códigos Fonte</li>
-                    </ul>
-                    <small>Pagamento Único</small>
-                </div>
-                <div class="plan-card glass-panel" style="border: 1px solid #ff0000;">
-                    <h3>Inferno</h3>
-                    <div class="price">R$ 8,50</div>
-                    <ul class="benefits">
-                        <li>Java + Py + JS</li>
-                        <li>Mentoria Mensal</li>
-                        <li>Projetos Reais</li>
-                    </ul>
-                    <small>Pagamento Único</small>
-                </div>
-            </div>
-        </div>
+<!-- HOME -->
+<div id="home" class="section">
+<div class="hero">
+<h1>Domine o Código</h1>
+<p>Aprenda programação com conteúdo liberado conforme seu plano.</p>
+</div>
+</div>
 
-        <div id="learning-section" class="content-section glass-panel hidden">
-            <h2 id="learn-title">Área de Estudo</h2>
-            <div class="lang-icons">
-                <span>🐍</span> <span>☕</span> <span>📜</span>
-            </div>
-            <p id="learn-desc">Selecione uma linguagem para começar. (Conteúdo exclusivo para membros com plano).</p>
-            <br>
-            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
-                <h4>Python: Loop For</h4>
-                <code>for i in range(10): print(i)</code>
-            </div>
-        </div>
+<!-- AULAS -->
+<div id="learn" class="section glass hidden">
+<h2>Aulas Disponíveis</h2>
+<div id="lessons"></div>
+</div>
 
-        <div id="docs-section" class="doc-section glass-panel hidden">
-            <h3>Termos de Serviço (ToS)</h3>
-            <p>1. O pagamento é único e não reembolsável após 7 dias de uso.</p>
-            <p>2. Comportamento tóxico no Discord resultará em banimento sem reembolso.</p>
-            <br>
-            <h3>Política de Reembolso</h3>
-            <p>Reembolsos apenas se o cargo não for entregue em até 24h. Contate o admin.</p>
-            <br>
-            <h3>Link do Discord</h3>
-            <input type="text" value="https://discord.gg/seuservidor" style="width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; margin-top: 5px;">
-        </div>
+<!-- DOCS -->
+<div id="docs" class="section glass hidden">
+<h2>Documentação Técnica</h2>
 
-    </div>
+<h3>Conhecimento Mínimo Recomendado</h3>
 
-    <footer>
-        <p>&copy; 2026 FirePG. All rights reserved.</p>
-    </footer>
+<h4>🐍 Python</h4>
+<p>Variáveis, loops, funções, listas.</p>
 
-    <script>
-        // --- Configurações (Preencha aqui com sua info do Discord Dev Portal) ---
-        const CLIENT_ID = "1461307002570412084"; 
-        const REDIRECT_URI = "https://firepg.vercel.app/"; // Ex: https://firepg.vercel.app
-        
-        // --- Traduções ---
-        let currentLang = 'pt';
-        const texts = {
-            pt: {
-                home: "Início", learn: "Aulas", docs: "Docs",
-                heroTitle: "Domine o Código", heroDesc: "Python, JavaScript e Java. Tutoriais exclusivos.",
-                msgStatus: "Bem-vindo de volta!", login: "Login Discord"
-            },
-            en: {
-                home: "Home", learn: "Classes", docs: "Docs",
-                heroTitle: "Master the Code", heroDesc: "Python, JavaScript and Java. Exclusive tutorials.",
-                msgStatus: "Welcome back!", login: "Login Discord"
-            }
-        };
+<h4>📜 JavaScript</h4>
+<p>DOM, funções, async/await.</p>
 
-        // --- Sistema de Login OAuth2 Implícito ---
-        window.onload = () => {
-            // Verifica se voltou do Discord com token na URL
-            const fragment = new URLSearchParams(window.location.hash.slice(1));
-            const accessToken = fragment.get('access_token');
+<h4>☕ Java</h4>
+<p>POO, classes, métodos, tipos.</p>
 
-            if (accessToken) {
-                localStorage.setItem('discord_token', accessToken);
-                window.history.pushState({}, document.title, "/"); // Limpa URL
-                fetchDiscordUser(accessToken);
-            } else {
-                // Tenta recuperar sessão salva
-                const savedToken = localStorage.getItem('discord_token');
-                if (savedToken) fetchDiscordUser(savedToken);
-            }
-        };
+<hr>
 
-        function loginDiscord() {
-            // URL de Autorização OAuth2 (Implicit Grant)
-            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
-            window.location.href = authUrl;
-        }
+<h3>Uso da Plataforma</h3>
+<p>O acesso às aulas é liberado automaticamente com base no plano identificado no Discord.</p>
+</div>
 
-        function logout() {
-            localStorage.removeItem('discord_token');
-            localStorage.removeItem('user_data');
-            location.reload();
-        }
+</div>
 
-        async function fetchDiscordUser(token) {
-            try {
-                const res = await fetch('https://discord.com/api/users/@me', {
-                    headers: { authorization: `Bearer ${token}` }
-                });
+<script>
+const CLIENT_ID = "1461307002570412084";
+const REDIRECT = "https://firepg.vercel.app/";
 
-                if (res.status === 401) { logout(); return; } // Token expirou
+function login(){
+location.href=`https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT)}&response_type=token&scope=identify`;
+}
 
-                const user = await res.json();
-                updateUI(user);
-            } catch (err) {
-                console.error(err);
-            }
-        }
+function logout(){
+localStorage.clear();
+location.reload();
+}
 
-        function updateUI(user) {
-            document.getElementById('login-btn').classList.add('hidden');
-            document.getElementById('logout-btn').classList.remove('hidden');
-            document.getElementById('user-profile').style.display = 'block';
-            
-            document.getElementById('user-avatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-            document.getElementById('user-name').innerText = user.global_name || user.username;
-            
-            // Simulação de Plano (Na vida real, aqui o site bateria na API do bot)
-            // Como é estático, vamos deixar padrão ou salvar no localStorage se você quiser simular
-            document.getElementById('user-plan').innerText = "Plano: Verifique no Discord";
-        }
+function show(id){
+["home","learn","docs"].forEach(s=>document.getElementById(s).classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+}
 
-        // --- Navegação e Idioma ---
-        function showSection(sectionId) {
-            document.getElementById('home-section').classList.add('hidden');
-            document.getElementById('learning-section').classList.add('hidden');
-            document.getElementById('docs-section').classList.add('hidden');
+window.onload=async()=>{
+const hash=new URLSearchParams(location.hash.slice(1));
+const token=hash.get("access_token");
+if(token){
+localStorage.setItem("token",token);
+history.replaceState({},document.title,"/");
+}
 
-            if(sectionId === 'home') document.getElementById('home-section').classList.remove('hidden');
-            if(sectionId === 'learning') document.getElementById('learning-section').classList.remove('hidden');
-            if(sectionId === 'docs') document.getElementById('docs-section').classList.remove('hidden');
-        }
+const saved=localStorage.getItem("token");
+if(saved) await loadUser(saved);
+}
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'pt' ? 'en' : 'pt';
-            const t = texts[currentLang];
-            
-            document.getElementById('nav-home').innerText = t.home;
-            document.getElementById('nav-learn').innerText = t.learn;
-            document.getElementById('nav-docs').innerText = t.docs;
-            document.getElementById('hero-title').innerText = t.heroTitle;
-            document.getElementById('hero-desc').innerText = t.heroDesc;
-            
-            alert(`Language set to: ${currentLang.toUpperCase()}`);
-        }
-    </script>
+async function loadUser(token){
+const userRes=await fetch("https://discord.com/api/users/@me",{
+headers:{Authorization:`Bearer ${token}`}
+});
+if(!userRes.ok)return;
+
+const user=await userRes.json();
+
+document.getElementById("login").classList.add("hidden");
+document.getElementById("logout").classList.remove("hidden");
+document.getElementById("profile").classList.remove("hidden");
+document.getElementById("username").innerText=user.username;
+
+await loadPlan(user.id);
+}
+
+async function loadPlan(userId){
+/*
+AQUI É CONSULTA REAL
+Backend retorna algo assim:
+{
+  "plan":"Chama",
+  "lessons":[
+    {"lang":"Python","title":"Loops","code":"for i in range(5): print(i)"},
+    {"lang":"JavaScript","title":"Funções","code":"function soma(a,b){return a+b}"}
+  ]
+}
+*/
+
+const res=await fetch(`https://api.firepg.com/user/${userId}`);
+const data=await res.json();
+
+document.getElementById("plan").innerText="Plano: "+data.plan;
+
+const area=document.getElementById("lessons");
+area.innerHTML="";
+
+data.lessons.forEach(l=>{
+area.innerHTML+=`
+<div class="lesson">
+<h4>${l.lang} — ${l.title}</h4>
+<pre><code>${l.code}</code></pre>
+</div>`;
+});
+}
+</script>
+
 </body>
 </html>
