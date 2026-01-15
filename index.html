@@ -5,7 +5,6 @@
 <title>FirePG | Bots Profissionais</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- FAVICON -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,
 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
 <defs>
@@ -25,10 +24,7 @@
   --border:rgba(255,255,255,.15);
 }
 
-*{
-  box-sizing:border-box;
-  font-family:Inter,Arial,sans-serif;
-}
+*{box-sizing:border-box;font-family:Inter,Arial}
 
 body{
   margin:0;
@@ -36,39 +32,10 @@ body{
   color:#fff;
 }
 
-/* ===== BLOQUEIO SEM LOGIN ===== */
-#lock{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.88);
-  backdrop-filter:blur(10px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
-
-.lock-box{
-  background:var(--glass);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:35px;
-  max-width:420px;
-  text-align:center;
-}
-
-.lock-box h2{
-  margin-top:0;
-}
-
-.lock-box button{
-  margin-top:20px;
-}
-
-/* ===== HEADER ===== */
 header{
   text-align:center;
   padding:50px 20px;
+  animation:fadeDown .8s ease;
 }
 
 .logo{
@@ -79,24 +46,34 @@ header{
   color:transparent;
 }
 
-.subtitle{
-  opacity:.8;
-  margin-top:10px;
-}
-
-/* ===== GLASS ===== */
 .glass{
   background:var(--glass);
   backdrop-filter:blur(18px);
-  border-radius:20px;
-  padding:28px;
-  max-width:950px;
-  margin:25px auto;
   border:1px solid var(--border);
+  border-radius:22px;
+  padding:28px;
+  max-width:980px;
+  margin:25px auto;
+  animation:fadeUp .8s ease;
+  transition:.3s;
 }
 
-/* ===== BOTÕES ===== */
+.glass:hover{
+  box-shadow:0 0 35px rgba(255,90,40,.15);
+}
+
+input,select{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border-radius:12px;
+  border:none;
+  background:#0e0e0e;
+  color:#fff;
+}
+
 button{
+  margin-top:16px;
   background:linear-gradient(90deg,var(--red),var(--orange));
   border:none;
   padding:14px 22px;
@@ -106,157 +83,224 @@ button{
   cursor:pointer;
 }
 
-/* ===== INPUTS ===== */
-input{
-  width:100%;
-  padding:14px;
-  margin-top:12px;
-  border-radius:12px;
-  border:none;
-  background:#0e0e0e;
-  color:#fff;
-  outline:none;
+#lock{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.92);
+  backdrop-filter:blur(10px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
 }
 
-/* ===== PLANOS ===== */
-.plan{
+.lock-box{
+  background:var(--glass);
   border:1px solid var(--border);
-  padding:20px;
-  border-radius:16px;
-  margin:12px 0;
+  border-radius:22px;
+  padding:35px;
+  text-align:center;
+  max-width:420px;
+  animation:fadeUp .6s ease;
 }
 
-.plan b{
-  font-size:1.1rem;
+.profile-banner{
+  height:160px;
+  border-radius:18px;
+  background-size:cover;
+  background-position:center;
+  margin-bottom:60px;
+  position:relative;
+}
+
+.avatar{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  border:4px solid #050505;
+  position:absolute;
+  bottom:-55px;
+  left:30px;
+}
+
+.profile-info{
+  margin-top:10px;
+}
+
+.logout{
+  float:right;
+  background:#1a1a1a;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:none}
+}
+
+@keyframes fadeDown{
+  from{opacity:0;transform:translateY(-20px)}
+  to{opacity:1;transform:none}
 }
 </style>
 </head>
 
 <body>
 
-<!-- BLOQUEIO -->
 <div id="lock">
   <div class="lock-box">
     <h2>Acesso restrito</h2>
-    <p>Para utilizar a FirePG é obrigatório entrar com sua conta Discord.</p>
+    <p>Login obrigatório com Discord para usar a FirePG.</p>
     <button onclick="login()">Entrar com Discord</button>
   </div>
 </div>
 
 <header>
   <div class="logo">FirePG</div>
-  <div class="subtitle">Bots profissionais para Discord</div>
+  <p>Bots profissionais para Discord</p>
 </header>
 
-<div class="glass">
-  <h2>Sobre a FirePG</h2>
-  <p>
-    A FirePG é especializada no desenvolvimento de bots para Discord,
-    oferecendo soluções profissionais, planos acessíveis e suporte direto.
-  </p>
-</div>
-
 <div class="glass" id="perfil" style="display:none">
-  <h3 id="user"></h3>
-  <p><small>Pedidos e pagamentos são tratados exclusivamente via Discord.</small></p>
+  <button class="logout" onclick="logout()">Logout</button>
+
+  <div class="profile-banner" id="banner">
+    <img id="avatar" class="avatar">
+  </div>
+
+  <div class="profile-info">
+    <h2 id="user"></h2>
+    <p>ID: <span id="userid"></span></p>
+    <p>Data de entrada na FirePG: <b id="entrada"></b></p>
+    <p>Solicitações já feitas: <b id="total"></b></p>
+    <p><small>Pagamentos são realizados somente via PIX e diretamente no Discord.</small></p>
+  </div>
 </div>
 
 <div class="glass">
   <h2>Solicitar Bot</h2>
-  <input id="descricao" placeholder="Descrição completa do bot">
-  <input id="linguagem" placeholder="Linguagem (JavaScript, Java, Python)">
-  <input id="perfilbot" placeholder="Perfil do bot (ID ou link)">
+  <input id="descricao" placeholder="Descrição do bot">
+  <input id="linguagem" placeholder="Linguagem (JS, Java, Python)">
+
+  <select id="estilo">
+    <option value="">Selecione o estilo</option>
+    <option>Moderação</option>
+    <option>Economia</option>
+    <option>Utilidade</option>
+    <option>Comunidade</option>
+  </select>
+
+  <small>Outros estilos apenas falando diretamente com o técnico (caso tenha plano).</small>
+
   <button onclick="enviarPedido()">Enviar Solicitação</button>
 </div>
 
 <div class="glass">
-  <h2>Planos</h2>
+  <h2>Documentação</h2>
 
-  <div class="plan">
-    <b>Booster</b><br>
-    10% de desconto • +1 estilo visual
-  </div>
+  <h3>Termos de Serviço</h3>
+  <p>O desenvolvimento segue exatamente o que foi solicitado. Alterações após início podem gerar custos adicionais.</p>
 
-  <div class="plan">
-    <b>Faísca</b> — R$ 2,50 / mês<br>
-    16% de desconto • até 2 estilos
-  </div>
-
-  <div class="plan">
-    <b>Chama</b> — R$ 5,70 / mês<br>
-    18% de desconto • até 3 estilos
-  </div>
-
-  <small>Pagamentos realizados somente via Discord.</small>
+  <h3>Política de Reembolso</h3>
+  <p>Reembolsos somente antes do início do desenvolvimento. Após iniciado, não há reembolso.</p>
 </div>
 
 <script>
-/* ========= CONFIGURAÇÃO (NÃO ALTERADA) ========= */
-const CONFIG = {
-  DISCORD_CLIENT_ID: "1461307002570412084",
-  DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
-  OAUTH_REDIRECT: "https://firepg.vercel.app/"
+const CONFIG={
+  DISCORD_CLIENT_ID:"1461307002570412084",
+  DISCORD_WEBHOOK_URL:"https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
+  OAUTH_REDIRECT:"https://firepg.vercel.app/"
 };
 
-/* ========= LOGIN ========= */
 function login(){
-  const url =
-    "https://discord.com/oauth2/authorize" +
-    "?client_id=" + CONFIG.DISCORD_CLIENT_ID +
-    "&redirect_uri=" + encodeURIComponent(CONFIG.OAUTH_REDIRECT) +
-    "&response_type=token" +
-    "&scope=identify";
-  window.location.href = url;
+  location.href=
+  "https://discord.com/oauth2/authorize?client_id="+
+  CONFIG.DISCORD_CLIENT_ID+
+  "&redirect_uri="+encodeURIComponent(CONFIG.OAUTH_REDIRECT)+
+  "&response_type=token&scope=identify";
 }
 
-/* ========= TOKEN ========= */
+function logout(){
+  localStorage.clear();
+  location.reload();
+}
+
 if(location.hash){
-  const params = new URLSearchParams(location.hash.substring(1));
-  const token = params.get("access_token");
-  if(token){
-    localStorage.setItem("discord_token", token);
+  const p=new URLSearchParams(location.hash.substring(1));
+  const t=p.get("access_token");
+  if(t){
+    localStorage.setItem("discord_token",t);
     history.replaceState(null,null,location.pathname);
   }
 }
 
-const token = localStorage.getItem("discord_token");
+const token=localStorage.getItem("discord_token");
 if(token){
   fetch("https://discord.com/api/users/@me",{
     headers:{Authorization:"Bearer "+token}
-  })
-  .then(r=>r.json())
-  .then(u=>{
+  }).then(r=>r.json()).then(u=>{
     localStorage.setItem("discord_user",JSON.stringify(u));
+
+    if(!localStorage.getItem("entrada")){
+      localStorage.setItem("entrada",new Date().toLocaleDateString("pt-BR"));
+    }
+
     document.getElementById("lock").style.display="none";
     document.getElementById("perfil").style.display="block";
-    document.getElementById("user").innerText =
-      `${u.username}#${u.discriminator}`;
+
+    document.getElementById("user").innerText=u.username+"#"+u.discriminator;
+    document.getElementById("userid").innerText=u.id;
+    document.getElementById("entrada").innerText=localStorage.getItem("entrada");
+    document.getElementById("total").innerText=localStorage.getItem("total")||0;
+
+    document.getElementById("avatar").src=
+      `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
+
+    if(u.banner){
+      document.getElementById("banner").style.backgroundImage=
+        `url(https://cdn.discordapp.com/banners/${u.id}/${u.banner}.png?size=1024)`;
+    }else{
+      document.getElementById("banner").style.background="#111";
+    }
   });
 }
 
-/* ========= WEBHOOK ========= */
 function enviarPedido(){
-  const user = JSON.parse(localStorage.getItem("discord_user"));
-  if(!user){
-    alert("Login obrigatório.");
-    return;
-  }
+  const last=localStorage.getItem("last_request");
+  if(last && Date.now()-last<3600000)
+    return alert("Você só pode solicitar a cada 1 hora.");
+
+  const u=JSON.parse(localStorage.getItem("discord_user"));
+  if(!u) return;
 
   fetch(CONFIG.DISCORD_WEBHOOK_URL,{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
-      content:
-`NOVA SOLICITAÇÃO — FirePG
-Usuário: ${user.username}#${user.discriminator}
-ID: ${user.id}
-Perfil do bot: ${perfilbot.value}
-Linguagem: ${linguagem.value}
-Descrição:
-${descricao.value}`
+      embeds:[{
+        title:"Nova Solicitação — FirePG",
+        color:16729344,
+        fields:[
+          {name:"Usuário",value:`${u.username}#${u.discriminator}`},
+          {name:"ID",value:u.id},
+          {name:"Estilo",value:estilo.value},
+          {name:"Linguagem",value:linguagem.value},
+          {name:"Descrição",value:descricao.value}
+        ]
+      }],
+      components:[{
+        type:1,
+        components:[{
+          type:2,
+          style:5,
+          label:"Ver perfil do usuário",
+          url:"https://discord.com/users/"+u.id
+        }]
+      }]
     })
-  })
-  .then(()=>alert("Solicitação enviada. Aguarde contato via Discord."));
+  }).then(()=>{
+    localStorage.setItem("last_request",Date.now());
+    localStorage.setItem("total",(Number(localStorage.getItem("total")||0)+1));
+    location.reload();
+  });
 }
 </script>
 
