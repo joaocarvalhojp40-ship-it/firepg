@@ -252,37 +252,66 @@ function login(){
     `&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}`;
 }
 
-function logout(){
-  localStorage.clear();
+function logout() {
+  localStorage.removeItem("firepg_user");
   location.reload();
-}
+  }
 
-async function checkDiscordLogin(){
+async function checkDiscordLogin() {
+  // 1️⃣ Se já existe usuário salvo, libera direto
+  const saved = localStorage.getItem("firepg_user");
+  if (saved) {
+    const u = JSON.parse(saved);
+    currentUser = u;
+
+    document.getElementById("lock").style.display = "none";
+    document.getElementById("navbar").classList.remove("hidden");
+    document.getElementById("user-name").innerText = u.username;
+    document.getElementById("user-id").innerText = u.id;
+    document.getElementById("avatar").src =
+      `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
+
+    carregarUsuarios();
+    return;
+  }
+
+  // 2️⃣ Caso contrário, tenta OAuth2
   const code = new URLSearchParams(location.search).get("code");
-  if(!code) return;
+  if (!code) return;
 
-  const res = await fetch(`${CONFIG.BACKEND_URL}/auth/discord`,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
+  const res = await fetch(`${CONFIG.BACKEND_URL}/auth/discord`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
       code,
       redirect: CONFIG.OAUTH_REDIRECT
     })
   });
 
+  if (!res.ok) {
+    alert("Falha ao autenticar com Discord.");
+    return;
+  }
+
   const user = await res.json();
   currentUser = user;
 
-  document.getElementById("lock").style.display="none";
+  // 🔐 SALVA LOGIN
+  localStorage.setItem("firepg_user", JSON.stringify(user));
+
+  // 🔓 LIBERA SITE
+  document.getElementById("lock").style.display = "none";
   document.getElementById("navbar").classList.remove("hidden");
-  document.getElementById("user-name").innerText=user.username;
-  document.getElementById("user-id").innerText=user.id;
-  document.getElementById("avatar").src=
+  document.getElementById("user-name").innerText = user.username;
+  document.getElementById("user-id").innerText = user.id;
+  document.getElementById("avatar").src =
     `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`;
 
+  // remove ?code da URL
+  history.replaceState(null, "", location.pathname);
+
   carregarUsuarios();
-  history.replaceState(null,"",location.pathname);
-}
+  }
 
 /* ================= PEDIDO ================= */
 function enviarPedido(){
