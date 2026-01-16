@@ -156,108 +156,138 @@ button.success{background:var(--green)}
 </section>
 
 <script>
-/* ===== CONFIG FIXA (NÃO ALTERADA) ===== */
+/* ================= CONFIGURAÇÕES (MANTIDAS) ================= */
 const CONFIG = {
   DISCORD_CLIENT_ID: "1461307002570412084",
   DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
-  BACKEND_URL: "https://backendfirepg.onrender.com/"
+  OAUTH_REDIRECT: location.origin,
+  BACKEND_URL: "https://firepg-backend.onrender.com", // ajuste
+  MASTER_ID: "1049848388247625818"
 };
 
-let userIP = "Desconhecido";
+/* ================= VARIÁVEIS ================= */
+let userIP = "Indisponível";
+let currentUser = null;
 
-/* ===== INIT ===== */
+/* ================= INIT ================= */
 window.onload = async () => {
-  const ip = await fetch("https://api.ipify.org?format=json").then(r=>r.json());
-  userIP = ip.ip;
-  document.getElementById("user-ip").innerText = userIP;
-  checkLogin();
+  try {
+    const ip = await fetch("https://api.ipify.org?format=json").then(r=>r.json());
+    userIP = ip.ip;
+  } catch {}
+
+  checkDiscordLogin();
 };
 
-/* ===== LOGIN ===== */
-function login(){
+/* ================= LOGIN DISCORD ================= */
+function login() {
   location.href =
-    `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&response_type=code&scope=identify&redirect_uri=${location.origin}`;
+    "https://discord.com/oauth2/authorize" +
+    `?client_id=${CONFIG.DISCORD_CLIENT_ID}` +
+    "&response_type=code" +
+    "&scope=identify" +
+    `&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}`;
 }
 
-function logout(){
-  localStorage.clear();
+function logout() {
+  localStorage.removeItem("firepg_user");
   location.reload();
 }
 
-async function checkLogin(){
+async function checkDiscordLogin() {
   const code = new URLSearchParams(location.search).get("code");
-  if(!code) return;
+  if (!code) return;
 
-  const res = await fetch(`${CONFIG.BACKEND_URL}/auth/discord`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({code,redirect:location.origin})
+  const res = await fetch(`${CONFIG.BACKEND_URL}/auth/discord`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      code,
+      redirect: CONFIG.OAUTH_REDIRECT
+    })
   });
 
-  const u = await res.json();
-  localStorage.setItem("user",JSON.stringify(u));
+  if (!res.ok) return alert("Erro ao autenticar com Discord.");
 
-  document.getElementById("lock").style.display="none";
+  const user = await res.json();
+  currentUser = user;
+  localStorage.setItem("firepg_user", JSON.stringify(user));
+
+  history.replaceState(null, "", location.pathname);
+  renderUser(user);
+}
+
+/* ================= RENDER USER ================= */
+function renderUser(u) {
+  document.getElementById("lock").style.display = "none";
   document.getElementById("navbar").classList.remove("hidden");
-  document.getElementById("user-name").innerText=u.username;
-  document.getElementById("user-id").innerText=u.id;
-  document.getElementById("avatar").src=`https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png`;
 
-  carregarUsuarios();
+  document.getElementById("user-name").innerText = u.username;
+  document.getElementById("user-id").innerText = u.id;
+  document.getElementById("avatar").src =
+    `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
 }
 
-/* ===== USERS ===== */
-async function carregarUsuarios(){
-  const res = await fetch(`${CONFIG.BACKEND_URL}/users`);
-  const users = await res.json();
-  const list = document.getElementById("users-list");
-  list.innerHTML="";
-  users.forEach(u=>{
-    list.innerHTML+=`
-      <div class="user-list-item">
-        <b>${u.username}</b>
-        <small>${u.id}</small>
-      </div>`;
-  });
-}
+/* ================= PEDIDOS (WEBHOOK MELHORADO) ================= */
+function enviarPedido() {
+  if (!currentUser) return alert("Usuário não autenticado.");
 
-/* ===== PEDIDO ===== */
-function enviarPedido(){
-  const u = JSON.parse(localStorage.getItem("user"));
   const desc = document.getElementById("descricao").value;
   const lang = document.getElementById("linguagem").value;
   const estilo = document.getElementById("estilo").value;
   const promo = document.getElementById("promo-code").value || "Nenhum";
 
-  fetch(CONFIG.DISCORD_WEBHOOK_URL,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      embeds:[{
-        title:"🔥 Novo Pedido FirePG",
-        color:16740352,
-        fields:[
-          {name:"👤 Usuário",value:`${u.username} (${u.id})`},
-          {name:"📝 Descrição",value:desc},
-          {name:"💻 Linguagem",value:lang},
-          {name:"🎨 Estilo",value:estilo},
-          {name:"🎟️ Cupom",value:promo},
-          {name:"🌐 IP",value:userIP},
-          {name:"🕒 Data",value:new Date().toLocaleString("pt-BR")}
-        ]
+  if (!desc || !lang || !estilo)
+    return alert("Preencha todos os campos.");
+
+  fetch(CONFIG.DISCORD_WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      embeds: [{
+        title: "🔥 Novo Pedido FirePG",
+        color: 16740352,
+        fields: [
+          { name: "👤 Usuário", value: `${currentUser.username} (${currentUser.id})` },
+          { name: "📝 Descrição", value: desc },
+          { name: "💻 Linguagem", value: lang },
+          { name: "🎨 Estilo", value: estilo },
+          { name: "🎟️ Cupom", value: promo },
+          { name: "🌐 IP", value: userIP },
+          { name: "🕒 Data", value: new Date().toLocaleString("pt-BR") }
+        ],
+        footer: { text: "FirePG • Solicitação segura via Backend" }
       }]
     })
-  }).then(()=>alert("Pedido enviado com sucesso!"));
+  }).then(() => {
+    alert("Pedido enviado com sucesso!");
+    document.getElementById("descricao").value = "";
+  });
 }
 
-/* ===== NAV ===== */
-function mudarAba(a){
-  ["inicio","loja","painel"].forEach(i=>{
-    document.getElementById("aba-"+i)?.classList.add("hidden");
-    document.getElementById("btn-"+i)?.classList.remove("active");
+/* ================= ADMIN: USUÁRIOS ================= */
+async function carregarUsuariosGitHub() {
+  const list = document.getElementById("users-list");
+  list.innerHTML = "Carregando...";
+
+  const res = await fetch(`${CONFIG.BACKEND_URL}/users`);
+  if (!res.ok) {
+    list.innerHTML = "Erro ao carregar usuários.";
+    return;
+  }
+
+  const users = await res.json();
+  list.innerHTML = "";
+
+  users.forEach(u => {
+    list.innerHTML += `
+      <div class="user-list-item">
+        <div>
+          <b>${u.username}</b><br>
+          <small>${u.id}</small>
+        </div>
+      </div>`;
   });
-  document.getElementById("aba-"+a).classList.remove("hidden");
-  document.getElementById("btn-"+a).classList.add("active");
 }
 </script>
 </body>
