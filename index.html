@@ -531,33 +531,34 @@ async function carregarUsuariosGitHub() {
   const list = document.getElementById("users-list");
   list.innerHTML = "Carregando...";
 
-  // Adicionamos um parâmetro de tempo (?t=) para evitar que o navegador mostre dados antigos (cache)
+  // Usamos a URL da API para pegar o conteúdo do arquivo
   const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}?t=${Date.now()}`;
 
   try {
     const res = await fetch(apiUrl);
-    
-    if (!res.ok) {
-      throw new Error(`Erro ao acessar GitHub: ${res.status}`);
-    }
+    if (!res.ok) throw new Error("Erro ao acessar API do GitHub");
 
     const data = await res.json();
     
-    // O segredo está aqui: usamos b64DecodeUnicode em vez de atob direto
-    // Isso evita erros com caracteres especiais e acentos
-    const conteudoDecodificado = b64DecodeUnicode(data.content);
-    globalGitHubUsers = JSON.parse(conteudoDecodificado);
+    // Decodifica o conteúdo Base64 vindo do GitHub
+    const stringDados = b64DecodeUnicode(data.content);
+    const dadosConvertidos = JSON.parse(stringDados);
+
+    // Se o arquivo existir mas estiver vazio, tratamos como array vazio
+    globalGitHubUsers = Array.isArray(dadosConvertidos) ? dadosConvertidos : [];
+
+    console.log("Usuários carregados:", globalGitHubUsers); // Para você ver no F12 o que está vindo
 
     list.innerHTML = "";
 
     if (globalGitHubUsers.length === 0) {
-      list.innerHTML = "<p style='text-align:center;'>Nenhum usuário cadastrado.</p>";
+      list.innerHTML = "<p style='text-align:center;'>Arquivo encontrado, mas nenhum usuário registrado ainda.</p>";
       return;
     }
 
-    // Renderiza cada usuário na lista do painel
     globalGitHubUsers.forEach(u => {
       const isBlack = blacklisted.includes(u.id) || blacklisted.includes(u.ip);
+
       list.innerHTML += `
         <div class="user-list-item">
           <div>
@@ -573,10 +574,11 @@ async function carregarUsuariosGitHub() {
     });
 
   } catch (e) {
-    console.error("Erro na Database:", e);
-    list.innerHTML = `<p style='color:var(--red); text-align:center;'>Erro ao carregar usuários. Verifique se o arquivo existe no repositório.</p>`;
+    console.error("Erro detalhado:", e);
+    list.innerHTML = "Erro ao carregar. Verifique o console (F12).";
   }
 }
+
 
 
 /* ================= ADMIN & SEGURANÇA ================= */
