@@ -529,21 +529,28 @@ async function registrarNoGitHub(user) {
 }
 
 async function carregarUsuariosGitHub() {
-    const list = document.getElementById("users-list");
-    list.innerHTML = "Carregando...";
-    const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`;
-
-    try {
-        const res = await fetch(apiUrl, { headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` } });
-        const data = await res.json();
-        globalGitHubUsers = JSON.parse(b64DecodeUnicode(data.content));
-        list.innerHTML = "";
-        globalGitHubUsers.forEach(u => {
-            const isBlack = blacklisted.includes(u.id) || blacklisted.includes(u.ip);
-            list.innerHTML += `<div class="user-list-item"><div><b>${u.username}</b><br><small>${u.id} | ${u.ip}</small></div><button class="${isBlack?'success':'danger'}" onclick="forceBlacklist('${u.id}')">${isBlack?'OK':'BAN'}</button></div>`;
-        });
-    } catch(e) { list.innerHTML = "Erro ao carregar."; }
+  const list = document.getElementById("users-list");
+  list.innerHTML = "Carregando...";
+  const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}?t=${Date.now()}`;
+  try {
+    const res = await fetch(apiUrl, { 
+      headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}`, "Accept": "application/vnd.github.v3+json" } 
+    });
+    if (!res.ok) throw new Error("Erro API");
+    const data = await res.json();
+    globalGitHubUsers = JSON.parse(b64DecodeUnicode(data.content));
+    list.innerHTML = "";
+    if (globalGitHubUsers.length === 0) {
+      list.innerHTML = "<p>Nenhum usuário.</p>";
+      return;
+    }
+    globalGitHubUsers.forEach(u => {
+      const isBlack = blacklisted.includes(u.id) || blacklisted.includes(u.ip);
+      list.innerHTML += `<div class="user-list-item"><div><b>${u.username}</b><br><small>${u.id}</small></div><button class="${isBlack?'success':'danger'}" onclick="forceBlacklist('${u.id}')">${isBlack?'OK':'BAN'}</button></div>`;
+    });
+  } catch(e) { list.innerHTML = "Erro ao carregar dados."; }
 }
+
 
 /* ================= ADMIN & SEGURANÇA ================= */
 let tentativas = 0;
