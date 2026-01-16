@@ -7,7 +7,6 @@
 <link rel="icon" type="image/png" href="firepg.png">
 
 <style>
-/* ===== VARIÁVEIS ===== */
 :root{
   --red:#ff2a2a;
   --orange:#ff7a18;
@@ -19,117 +18,76 @@
 }
 
 *{box-sizing:border-box;font-family:'Inter',Arial,sans-serif}
-body{margin:0;background:#050505;color:#fff;padding-bottom:50px}
+body{margin:0;background:#050505;color:#fff;padding-bottom: 50px;}
 
-.hidden{display:none!important}
-.fade-in{animation:fadeIn .5s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
-@keyframes fire{from{text-shadow:0 0 10px rgba(255,90,40,.4)}to{text-shadow:0 0 22px rgba(255,120,60,.8)}}
+.hidden { display: none !important; }
+.fade-in { animation: fadeIn 0.5s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fire{ from{text-shadow:0 0 10px rgba(255,90,40,.4)} to{text-shadow:0 0 22px rgba(255,120,60,.8)} }
 
-/* ===== NAV ===== */
-nav{
-  display:flex;justify-content:center;gap:20px;
-  padding:20px;background:rgba(0,0,0,.8);
-  position:sticky;top:0;z-index:100;
-  backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--border)
-}
-nav button{
-  background:transparent;border:none;color:var(--gray);
-  font-size:1rem;cursor:pointer
-}
-nav button.active{
-  color:#fff;border-bottom:2px solid var(--orange)
+nav {
+  display: flex; justify-content: center; gap: 20px; padding: 20px;
+  background: rgba(0,0,0,0.8); position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
 }
 
-/* ===== LOGO ===== */
+nav button { background: transparent; border: 1px solid transparent; color: var(--gray); cursor: pointer; }
+nav button.active { color: #fff; border-bottom: 2px solid var(--orange); border-radius: 0; }
+
 .logo{
-  font-size:3.3rem;font-weight:900;text-align:center;
-  background:linear-gradient(90deg,var(--red),var(--orange));
-  -webkit-background-clip:text;color:transparent;
-  animation:fire 2.5s infinite alternate;margin-top:30px
+  font-size:3.3rem; font-weight:900; background:linear-gradient(90deg,var(--red),var(--orange));
+  -webkit-background-clip:text; color:transparent; animation:fire 2.5s infinite alternate;
+  text-align: center; margin-top: 30px;
 }
-.subtitle{text-align:center;color:var(--gray);margin-bottom:40px}
+.subtitle { text-align: center; color: var(--gray); margin-bottom: 40px; }
 
-/* ===== CONTAINERS ===== */
 .glass{
-  background:var(--glass);
-  backdrop-filter:blur(18px);
-  border:1px solid var(--border);
-  border-radius:22px;
-  padding:28px;
-  max-width:1000px;
-  margin:25px auto;
+  background:var(--glass); backdrop-filter:blur(18px); border:1px solid var(--border);
+  border-radius:22px; padding:28px; max-width:1000px; margin:25px auto; transition:.3s;
 }
+.glass:hover{ box-shadow:0 0 35px rgba(255,90,40,.15); }
 
-/* ===== INPUTS ===== */
 input,select{
-  width:100%;padding:14px;margin-top:12px;
-  border-radius:12px;border:1px solid var(--border);
-  background:#0e0e0e;color:#fff
+  width:100%; padding:14px; margin-top:12px; border-radius:12px;
+  border:1px solid var(--border); background:#0e0e0e; color:#fff; outline: none;
 }
 button{
-  margin-top:16px;
-  background:linear-gradient(90deg,var(--red),var(--orange));
-  border:none;padding:14px 22px;
-  border-radius:14px;color:#fff;
-  font-weight:700;cursor:pointer
+  margin-top:16px; background:linear-gradient(90deg,var(--red),var(--orange));
+  border:none; padding:14px 22px; border-radius:14px; color:#fff;
+  font-weight:700; cursor:pointer; transition: transform 0.2s;
 }
-button.danger{background:var(--error)}
-button.success{background:var(--green)}
+button.danger { background: var(--error); }
 
-/* ===== PERFIL ===== */
-.profile-header{display:flex;gap:20px;align-items:center}
-.avatar{
-  width:80px;height:80px;border-radius:50%;
-  border:2px solid var(--orange)
-}
-
-/* ===== USERS LIST ===== */
-.user-list-item{
-  display:flex;justify-content:space-between;
-  align-items:center;
-  background:#000;padding:10px;
-  border-radius:8px;margin-bottom:6px
-}
-
-/* ===== LOCK ===== */
 #lock{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.92);
-  display:flex;align-items:center;
-  justify-content:center;z-index:999
+  position:fixed; inset:0; background:rgba(0,0,0,.92); backdrop-filter:blur(10px);
+  display:flex; align-items:center; justify-content:center; z-index:999;
 }
 .lock-box{
-  background:var(--glass);
-  border:1px solid var(--border);
-  border-radius:22px;
-  padding:35px;text-align:center;
-  max-width:400px
+  background:var(--glass); border:1px solid var(--border); border-radius:22px;
+  padding:35px; text-align:center; max-width: 400px;
 }
 
-/* ===== FOOTER ===== */
-footer{
-  margin-top:60px;padding:40px 20px;
-  background:#080808;
-  border-top:1px solid var(--border);
-  color:var(--gray)
-}
-.footer-grid{
-  max-width:1100px;margin:auto;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:30px
-}
-footer b{color:#fff}
-footer a{color:var(--orange);text-decoration:none}
-footer a:hover{text-decoration:underline}
+.profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+.avatar{ width:80px; height:80px; border-radius:50%; border:2px solid var(--orange); }
+
+.plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.plan-card { background: #0e0e0e; border: 1px solid var(--border); border-radius: 18px; padding: 25px; text-align: center; position: relative; }
+.price { font-size: 2rem; font-weight: bold; margin: 15px 0; }
+.features { list-style: none; padding: 0; text-align: left; margin: 20px 0; }
+.badge { background: var(--orange); color: #fff; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; position: absolute; top: 15px; right: 15px; }
+
+.user-list-item { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 10px; border-radius: 8px; margin-bottom: 5px; }
+
+footer{ margin-top:60px; padding:40px 20px; background:#080808; border-top:1px solid var(--border); color:var(--gray); }
+.footer-grid{ max-width:1100px; margin:auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:30px; }
+footer a { color: var(--orange); text-decoration: none; }
+
+#admin-block-overlay { position: fixed; inset: 0; background: black; z-index: 2000; display: none; place-items: center; text-align: center; }
 </style>
 </head>
 
 <body>
 
-<!-- LOCK -->
 <div id="lock">
   <div class="lock-box">
     <h2>Acesso Restrito</h2>
@@ -138,220 +96,245 @@ footer a:hover{text-decoration:underline}
   </div>
 </div>
 
+<div id="admin-block-overlay">
+  <div>
+    <h1 style="color:var(--red)">ACESSO BLOQUEADO</h1>
+    <p>Muitas tentativas incorretas. Aguarde 5 minutos.</p>
+    <p id="timer-display"></p>
+  </div>
+</div>
+
 <nav id="navbar" class="hidden">
-  <button id="btn-inicio" class="active" onclick="mudarAba('inicio')">Início</button>
-  <button id="btn-loja" onclick="mudarAba('loja')">Loja</button>
-  <button id="btn-painel" onclick="mudarAba('painel')">Painel do Técnico</button>
+  <button onclick="mudarAba('inicio')" id="btn-inicio" class="active">Início</button>
+  <button onclick="mudarAba('loja')" id="btn-loja">Loja</button>
+  <button onclick="mudarAba('painel')" id="btn-painel">Painel do Técnico</button>
 </nav>
 
 <div class="logo">FirePG</div>
 <p class="subtitle">Bots profissionais para Discord</p>
 
-<!-- ================= INÍCIO ================= -->
-<section id="aba-inicio" class="fade-in">
-
-<div class="glass">
-  <div class="profile-header">
-    <img id="avatar" class="avatar">
-    <div>
-      <h2 id="user-name">Carregando...</h2>
-      <p>ID: <span id="user-id">...</span></p>
-      <p>IP: <b id="user-ip">...</b></p>
-      <p style="font-size:.8rem;color:var(--green)">
-        Status de Segurança: Protegido ✅
-      </p>
+<section id="aba-inicio" class="fade-in hidden">
+  <div class="glass">
+    <div class="profile-header">
+      <img id="avatar" class="avatar" src="">
+      <div class="user-info">
+        <h2 id="user-name">Carregando...</h2>
+        <p>ID: <span id="user-id">...</span></p>
+        <p>Membro desde: <b id="data-entrada"></b></p>
+        <p>Solicitações: <b id="total-pedidos">0</b></p>
+        <p style="font-size:0.8rem; color:var(--green)">Status Database: <span id="db-status">Sincronizando...</span></p>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a href="https://discord.gg/BaTeCB6E3G" target="_blank" style="flex:1"><button style="width:100%; margin-top:0">Acessar Discord</button></a>
+      <button class="danger" onclick="logout()" style="margin-top:0">Sair</button>
     </div>
   </div>
-  <button class="danger" onclick="logout()">Sair</button>
-</div>
 
-<div class="glass">
-  <h2>Solicitar Bot</h2>
-  <input id="descricao" placeholder="Descrição detalhada do bot">
-  <input id="linguagem" placeholder="Linguagem (JS, Java, Python)">
-  <select id="estilo">
-    <option value="">Selecione o estilo</option>
-    <option>Moderação</option>
-    <option>Economia</option>
-    <option>Utilidade</option>
-    <option>Comunidade</option>
-  </select>
-  <input id="promo-code" placeholder="Código promocional (opcional)">
-  <button onclick="enviarPedido()">Enviar Solicitação</button>
-</div>
-
+  <div class="glass">
+    <h2>Solicitar Bot</h2>
+    <input id="descricao" placeholder="Descrição detalhada do bot">
+    <input id="linguagem" placeholder="Linguagem (JS, Java, Python)">
+    <select id="estilo">
+      <option value="">Selecione o estilo</option>
+      <option>Moderação</option>
+      <option>Economia</option>
+      <option>Utilidade</option>
+      <option>Comunidade</option>
+    </select>
+    <input id="promo-code" placeholder="Insira o código promocional (Opcional)">
+    <button onclick="enviarPedido()">Enviar Solicitação</button>
+  </div>
 </section>
 
-<!-- ================= LOJA ================= -->
 <section id="aba-loja" class="hidden fade-in">
-<div class="glass">
-  <h2 style="text-align:center">Planos Disponíveis</h2>
-  <p style="text-align:center;color:var(--gray)">
-    Pagamentos realizados somente via Discord.
-  </p>
-</div>
+  <div class="glass">
+    <h2 style="text-align: center;">Planos Disponíveis</h2>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <h3>Plano Faísca</h3>
+        <div class="price">R$ 2,50<span>/mês</span></div>
+        <button onclick="window.open('https://discord.gg/BaTeCB6E3G')">Contratar</button>
+      </div>
+      <div class="plan-card">
+        <span class="badge">Popular</span>
+        <h3>Plano Chama</h3>
+        <div class="price">R$ 4,50<span>/mês</span></div>
+        <button onclick="window.open('https://discord.gg/BaTeCB6E3G')">Contratar</button>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- ================= PAINEL ================= -->
 <section id="aba-painel" class="hidden fade-in">
-<div class="glass">
-  <h2>Usuários Registrados</h2>
-  <div id="users-list">Carregando...</div>
-</div>
+  <div id="painel-login" class="glass">
+    <h2>Acesso Técnico</h2>
+    <input type="password" id="admin-pass" placeholder="Senha de acesso">
+    <button onclick="verificarAdmin()">Acessar Painel</button>
+  </div>
+  <div id="painel-dashboard" class="glass hidden">
+    <h2>Usuários Registrados</h2>
+    <div id="users-list">Carregando...</div>
+    <button class="danger" onclick="sairAdmin()">Sair</button>
+  </div>
 </section>
 
-<!-- ================= FOOTER ================= -->
 <footer>
   <div class="footer-grid">
-    <div>
-      <b>HOSPEDAGENS</b><br>
-      Bot — Discloud<br>
-      Site — Vercel
-    </div>
-    <div>
-      <b>LINKS DIRETOS</b><br>
-      Discord — <a href="https://discord.gg/BaTeCB6E3G" target="_blank">Entrar no Servidor</a><br>
-      Site — <a href="https://firepg.vercel.app/" target="_blank">firepg.vercel.app</a>
-    </div>
-    <div>
-      <b>SUPORTE</b><br>
-      E-mail: <a href="mailto:firepg2026@outlook.com.br">firepg2026@outlook.com.br</a>
-    </div>
+    <div><b>HOSPEDAGENS</b><br>Bot: Discloud / Site: Vercel</div>
+    <div><b>LINKS</b><br><a href="https://discord.gg/BaTeCB6E3G" target="_blank">Discord</a></div>
+    <div><b>SUPORTE</b><br>firepg2026@outlook.com.br</div>
   </div>
 </footer>
 
 <script>
-/* ================= CONFIGURAÇÕES ================= */
 const CONFIG = {
   DISCORD_CLIENT_ID: "1461307002570412084",
-  DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
   BACKEND_URL: "https://firepg-backend.onrender.com",
-  OAUTH_REDIRECT: "https://firepg.vercel.app/"
+  OAUTH_REDIRECT: "https://firepg.vercel.app/",
+  WEBHOOK: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
+  ADMIN_PASS: "127605#$firepg"
 };
 
 let currentUser = null;
 let userIP = "Indisponível";
 
-/* ================= INIT ================= */
 window.onload = async () => {
-  try{
-    const ip = await fetch("https://api.ipify.org?format=json").then(r=>r.json());
-    userIP = ip.ip;
-    document.getElementById("user-ip").innerText = userIP;
-  }catch{}
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    userIP = data.ip;
+  } catch(e) {}
   checkDiscordLogin();
 };
 
-/* ================= LOGIN ================= */
-function login(){
-  location.href =
-    "https://discord.com/oauth2/authorize" +
-    `?client_id=${CONFIG.DISCORD_CLIENT_ID}` +
-    "&response_type=code" +
-    "&scope=identify" +
-    `&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}`;
+function login() {
+  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=code&scope=identify`;
 }
 
 function logout() {
-  localStorage.removeItem("firepg_user");
-  location.reload();
-  }
+  localStorage.removeItem("discord_user");
+  location.href = CONFIG.OAUTH_REDIRECT;
+}
 
 async function checkDiscordLogin() {
-  try {
-    // 🔁 LOGIN SALVO
-    const saved = localStorage.getItem("firepg_user");
-    if (saved) {
-      const u = JSON.parse(saved);
-      liberarInterface(u);
-      carregarUsuarios();
-      return;
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get("code");
+  const saved = localStorage.getItem("discord_user");
+
+  if (saved) {
+    exibirSite(JSON.parse(saved));
+    return;
+  }
+
+  if (code) {
+    try {
+      const res = await fetch(`${CONFIG.BACKEND_URL}/auth/discord`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, redirect: CONFIG.OAUTH_REDIRECT })
+      });
+      const data = await res.json();
+      const user = data.user || data;
+      if (user.id) {
+        localStorage.setItem("discord_user", JSON.stringify(user));
+        window.history.replaceState(null, "", window.location.pathname);
+        exibirSite(user);
+      }
+    } catch (e) {
+      alert("Erro ao conectar com o servidor.");
     }
+  }
+}
 
-    // 🔐 OAUTH
-    const code = new URLSearchParams(location.search).get("code");
-    if (!code) return;
+function exibirSite(user) {
+  currentUser = user;
+  document.getElementById("lock").style.display = "none";
+  document.getElementById("navbar").classList.remove("hidden");
+  document.getElementById("aba-inicio").classList.remove("hidden");
+  
+  document.getElementById("user-name").innerText = user.username;
+  document.getElementById("user-id").innerText = user.id;
+  document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+  
+  if (!localStorage.getItem("entrada")) localStorage.setItem("entrada", new Date().toLocaleDateString("pt-BR"));
+  document.getElementById("data-entrada").innerText = localStorage.getItem("entrada");
+  document.getElementById("total-pedidos").innerText = localStorage.getItem("total") || 0;
+  
+  sincronizarGitHub(user);
+}
 
-    const res = await fetch(`${CONFIG.BACKEND_URL}/auth/discord`, {
+async function sincronizarGitHub(user) {
+  try {
+    await fetch(`${CONFIG.BACKEND_URL}/users/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        code,
-        redirect: CONFIG.OAUTH_REDIRECT
-      })
+      body: JSON.stringify({ user, ip: userIP })
     });
+    document.getElementById("db-status").innerText = "Sincronizado ✅";
+  } catch (e) {
+    document.getElementById("db-status").innerText = "Offline ⚠️";
+  }
+}
 
-    if (!res.ok) throw new Error("OAuth falhou");
+function mudarAba(aba) {
+  ['inicio', 'loja', 'painel'].forEach(id => {
+    document.getElementById('aba-' + id).classList.add('hidden');
+    document.getElementById('btn-' + id).classList.remove('active');
+  });
+  document.getElementById('aba-' + aba).classList.remove('hidden');
+  document.getElementById('btn-' + aba).classList.add('active');
+}
 
-    const data = await res.json();
-
-    // 👇 SUPORTA AMBOS FORMATOS
-    const user = data.user || data;
-
-    localStorage.setItem("firepg_user", JSON.stringify(user));
-    liberarInterface(user);
-
-    history.replaceState(null, "", location.pathname);
+function verificarAdmin() {
+  const pass = document.getElementById("admin-pass").value;
+  if (pass === CONFIG.ADMIN_PASS) {
+    document.getElementById("painel-login").classList.add("hidden");
+    document.getElementById("painel-dashboard").classList.remove("hidden");
     carregarUsuarios();
-
-  } catch (err) {
-    console.error("Erro no login:", err);
-    alert("Erro ao autenticar. Veja o console.");
+  } else {
+    alert("Senha incorreta.");
   }
+}
+
+async function carregarUsuarios() {
+  try {
+    const res = await fetch(`${CONFIG.BACKEND_URL}/users`);
+    const users = await res.json();
+    const list = document.getElementById("users-list");
+    list.innerHTML = users.map(u => `<div class="user-list-item">${u.username} (${u.id})</div>`).join('');
+  } catch(e) {
+    document.getElementById("users-list").innerText = "Erro ao carregar.";
   }
+}
 
-  
+function sairAdmin() {
+  document.getElementById("painel-dashboard").classList.add("hidden");
+  document.getElementById("painel-login").classList.remove("hidden");
+}
 
-/* ================= PEDIDO ================= */
-function enviarPedido(){
-  if(!currentUser) return alert("Não autenticado.");
+function enviarPedido() {
+  const desc = document.getElementById("descricao").value;
+  if (!desc) return alert("Descreva o bot.");
 
-  fetch(CONFIG.DISCORD_WEBHOOK_URL,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      embeds:[{
-        title:"🔥 Novo Pedido FirePG",
-        color:16740352,
-        fields:[
-          {name:"Usuário",value:`${currentUser.username} (${currentUser.id})`},
-          {name:"IP",value:userIP},
-          {name:"Data",value:new Date().toLocaleString("pt-BR")}
-        ],
-        footer:{text:"FirePG • Backend Seguro"}
+  fetch(CONFIG.WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      embeds: [{
+        title: "🔥 Novo Pedido",
+        fields: [
+          { name: "Usuário", value: currentUser.username },
+          { name: "Descrição", value: desc },
+          { name: "IP", value: userIP }
+        ]
       }]
     })
-  }).then(()=>alert("Pedido enviado com sucesso!"));
-}
-
-/* ================= USERS ================= */
-async function carregarUsuarios(){
-  const res = await fetch(`${CONFIG.BACKEND_URL}/users`);
-  const users = await res.json();
-  const list = document.getElementById("users-list");
-  list.innerHTML="";
-  users.forEach(u=>{
-    list.innerHTML+=`
-      <div class="user-list-item">
-        <b>${u.username}</b>
-        <small>${u.id}</small>
-      </div>`;
+  }).then(() => {
+    localStorage.setItem("total", Number(localStorage.getItem("total") || 0) + 1);
+    alert("Pedido enviado!");
+    location.reload();
   });
-}
-
-/* ================= NAV ================= */
-function mudarAba(a){
-  ["inicio","loja","painel"].forEach(i=>{
-    document.getElementById("aba-"+i).classList.add("hidden");
-    document.getElementById("btn-"+i).classList.remove("active");
-  });
-  document.getElementById("aba-"+a).classList.remove("hidden");
-  document.getElementById("btn-"+a).classList.add("active");
-}
-</script>
-<script>
-function login() {
-  alert("Botão funcionando");
 }
 </script>
 </body>
