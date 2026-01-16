@@ -258,21 +258,46 @@ function logout() {
   }
 
 async function checkDiscordLogin() {
-  // 1️⃣ Se já existe usuário salvo, libera direto
-  const saved = localStorage.getItem("firepg_user");
-  if (saved) {
-    const u = JSON.parse(saved);
-    currentUser = u;
+  try {
+    // 🔁 LOGIN SALVO
+    const saved = localStorage.getItem("firepg_user");
+    if (saved) {
+      const u = JSON.parse(saved);
+      liberarInterface(u);
+      carregarUsuarios();
+      return;
+    }
 
-    document.getElementById("lock").style.display = "none";
-    document.getElementById("navbar").classList.remove("hidden");
-    document.getElementById("user-name").innerText = u.username;
-    document.getElementById("user-id").innerText = u.id;
-    document.getElementById("avatar").src =
-      `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
+    // 🔐 OAUTH
+    const code = new URLSearchParams(location.search).get("code");
+    if (!code) return;
 
+    const res = await fetch(`${CONFIG.BACKEND_URL}/auth/discord`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        code,
+        redirect: CONFIG.OAUTH_REDIRECT
+      })
+    });
+
+    if (!res.ok) throw new Error("OAuth falhou");
+
+    const data = await res.json();
+
+    // 👇 SUPORTA AMBOS FORMATOS
+    const user = data.user || data;
+
+    localStorage.setItem("firepg_user", JSON.stringify(user));
+    liberarInterface(user);
+
+    history.replaceState(null, "", location.pathname);
     carregarUsuarios();
-    return;
+
+  } catch (err) {
+    console.error("Erro no login:", err);
+    alert("Erro ao autenticar. Veja o console.");
+  }
   }
 
   // 2️⃣ Caso contrário, tenta OAuth2
