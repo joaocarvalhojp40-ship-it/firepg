@@ -531,44 +531,52 @@ async function carregarUsuariosGitHub() {
   const list = document.getElementById("users-list");
   list.innerHTML = "Carregando...";
 
+  // Adicionamos um parâmetro de tempo (?t=) para evitar que o navegador mostre dados antigos (cache)
   const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}?t=${Date.now()}`;
 
   try {
     const res = await fetch(apiUrl);
-    if (!res.ok) throw new Error("Erro GitHub");
+    
+    if (!res.ok) {
+      throw new Error(`Erro ao acessar GitHub: ${res.status}`);
+    }
 
     const data = await res.json();
-    globalGitHubUsers = JSON.parse(atob(data.content));
+    
+    // O segredo está aqui: usamos b64DecodeUnicode em vez de atob direto
+    // Isso evita erros com caracteres especiais e acentos
+    const conteudoDecodificado = b64DecodeUnicode(data.content);
+    globalGitHubUsers = JSON.parse(conteudoDecodificado);
 
     list.innerHTML = "";
 
     if (globalGitHubUsers.length === 0) {
-      list.innerHTML = "<p>Nenhum usuário cadastrado.</p>";
+      list.innerHTML = "<p style='text-align:center;'>Nenhum usuário cadastrado.</p>";
       return;
     }
 
+    // Renderiza cada usuário na lista do painel
     globalGitHubUsers.forEach(u => {
       const isBlack = blacklisted.includes(u.id) || blacklisted.includes(u.ip);
-
       list.innerHTML += `
         <div class="user-list-item">
           <div>
             <b>${u.username}</b><br>
-            <small>${u.id}</small>
+            <small>ID: ${u.id}</small>
           </div>
           <button class="${isBlack ? 'success' : 'danger'}"
             onclick="forceBlacklist('${u.id}')">
-            ${isBlack ? 'OK' : 'BAN'}
+            ${isBlack ? 'DESBLOQUEAR' : 'BANIR'}
           </button>
         </div>
       `;
     });
 
   } catch (e) {
-    console.error(e);
-    list.innerHTML = "Erro ao carregar usuários (veja o console).";
+    console.error("Erro na Database:", e);
+    list.innerHTML = `<p style='color:var(--red); text-align:center;'>Erro ao carregar usuários. Verifique se o arquivo existe no repositório.</p>`;
   }
-                           }
+}
 
 
 /* ================= ADMIN & SEGURANÇA ================= */
