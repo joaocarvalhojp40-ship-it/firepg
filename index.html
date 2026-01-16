@@ -214,6 +214,7 @@ footer a:hover { text-decoration: underline; }
         <p>ID: <span id="user-id">...</span></p>
         <p>Membro desde: <b id="data-entrada"></b></p>
         <p>Solicitações: <b id="total-pedidos">0</b></p>
+        <p style="font-size:0.8rem; color:var(--green)">Status Database: <span id="db-status">Aguardando...</span></p>
       </div>
     </div>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -342,11 +343,12 @@ footer a:hover { text-decoration: underline; }
     </div>
     
     <div class="admin-section">
-      <h3>📡 Usuários Conectados & Blacklist</h3>
-      <p style="font-size:0.9rem; color:var(--gray)">Gerencie quem tem acesso ao site.</p>
+      <h3>📡 Database de Usuários (GitHub Sync)</h3>
+      <p style="font-size:0.9rem; color:var(--gray)">Lista carregada diretamente do repositório remoto.</p>
       
       <div id="users-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-        </div>
+        <p style="text-align:center;">Carregando dados do GitHub...</p>
+      </div>
       
       <div style="display:flex; gap:10px;">
         <input id="blacklist-input" placeholder="IP ou ID para bloquear/desbloquear">
@@ -408,10 +410,20 @@ const CONFIG={
   ADMIN_PASS: "127605#$firepg"
 };
 
-// Base de dados simulada (LocalStorage)
+// === DATABASE GITHUB CONFIGURAÇÃO ===
+// Você DEVE criar um repositório e colocar o token aqui para funcionar.
+const GITHUB_CONFIG = {
+    TOKEN: "SEU_TOKEN_GITHUB_AQUI",  // Ex: ghp_xxxxxxxxxxxxxxxxx
+    USER: "SEU_USUARIO_GITHUB",      // Ex: eljoaogg
+    REPO: "NOME_DO_REPO",            // Ex: firepg-database
+    FILE_PATH: "database.json"       // Nome do arquivo onde salvará os usuários
+};
+
+// Base de dados local (Cache)
 let promoCodes = JSON.parse(localStorage.getItem('firepg_promos')) || ['PROMOBOOSTER', 'PROMOFAISCA', 'PROMOCHAMA'];
 let blacklisted = JSON.parse(localStorage.getItem('firepg_blacklist')) || [];
 let userIP = "Carregando...";
+let globalGitHubUsers = []; // Cache dos usuários carregados do GitHub
 
 // Inicialização
 window.onload = async () => {
@@ -434,18 +446,16 @@ window.onload = async () => {
 
 /* ================= LÓGICA DE NAVEGAÇÃO ================= */
 function mudarAba(aba) {
-  // Esconder todas
   ['inicio', 'loja', 'painel'].forEach(id => {
     document.getElementById('aba-' + id).classList.add('hidden');
     document.getElementById('btn-' + id).classList.remove('active');
   });
   
-  // Mostrar selecionada
   document.getElementById('aba-' + aba).classList.remove('hidden');
   document.getElementById('btn-' + aba).classList.add('active');
 }
 
-/* ================= LÓGICA DE LOGIN DISCORD ================= */
+/* ================= LÓGICA DE LOGIN DISCORD & LOGOUT ================= */
 function login(){
   location.href="https://discord.com/oauth2/authorize?client_id="+
   CONFIG.DISCORD_CLIENT_ID+
@@ -453,10 +463,13 @@ function login(){
   "&response_type=token&scope=identify";
 }
 
+// LOGOUT COMPLETO (ATUALIZADO)
 function logout(){
-  localStorage.removeItem("discord_token");
-  localStorage.removeItem("discord_user");
-  location.reload();
+  if(confirm("Tem certeza que deseja sair?")){
+    localStorage.clear(); // Limpa tokens, cache, tudo
+    // Redireciona para a raiz limpando a URL para evitar re-login automático se houver hash
+    window.location.href = window.location.origin + window.location.pathname;
+  }
 }
 
 function checkDiscordLogin(){
@@ -476,7 +489,6 @@ function checkDiscordLogin(){
     }).then(r=>r.json()).then(u=>{
       localStorage.setItem("discord_user",JSON.stringify(u));
       
-      // Checar se usuário está na blacklist pelo ID
       if(blacklisted.includes(u.id)) bloquearAcessoTotal();
 
       if(!localStorage.getItem("entrada"))
@@ -486,15 +498,167 @@ function checkDiscordLogin(){
       document.getElementById("navbar").classList.remove("hidden");
       mudarAba('inicio');
 
-      // Preencher perfil
       document.getElementById("user-name").innerText = u.username + "#" + u.discriminator;
       document.getElementById("user-id").innerText = u.id;
       document.getElementById("data-entrada").innerText = localStorage.getItem("entrada");
       document.getElementById("total-pedidos").innerText = localStorage.getItem("total")||0;
       document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
       
-    }).catch(() => logout()); // Token invalido
+      // REGISTRAR NO GITHUB AUTOMATICAMENTE
+      registrarNoGitHub(u);
+
+    }).catch((e) => {
+        console.error(e);
+        logout(); // Se der erro no token, faz logout
+    });
   }
+}
+
+/* ================= INTEGRAÇÃO GITHUB (DATABASE AUTOMÁTICA) ================= */
+
+// Função para codificar/decodificar Base64 (Unicode Safe)
+function b64EncodeUnicode(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function(match, p1) { return String.fromCharCode('0x' + p1); }));
+}
+function b64DecodeUnicode(str) {
+    return decodeURIComponent(atob(str).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+}
+
+async function registrarNoGitHub(user) {
+    const statusSpan = document.getElementById("db-status");
+    statusSpan.innerText = "Sincronizando...";
+
+    // Verifica se os dados do GitHub foram configurados
+    if(GITHUB_CONFIG.TOKEN === "SEU_TOKEN_GITHUB_AQUI") {
+        statusSpan.innerText = "Erro Config (Token)";
+        return;
+    }
+
+    const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`;
+
+    try {
+        // 1. Tentar ler o arquivo existente
+        let users = [];
+        let sha = null;
+
+        const getReq = await fetch(apiUrl, {
+            headers: { 
+                "Authorization": `token ${GITHUB_CONFIG.TOKEN}`,
+                "Accept": "application/vnd.github.v3+json"
+            }
+        });
+
+        if (getReq.ok) {
+            const data = await getReq.json();
+            const content = b64DecodeUnicode(data.content);
+            users = JSON.parse(content);
+            sha = data.sha;
+        } else if (getReq.status === 404) {
+            // Arquivo não existe, vamos criar do zero
+            console.log("Database não encontrada. Criando nova...");
+        } else {
+            throw new Error("Erro ao acessar GitHub API");
+        }
+
+        // 2. Verificar se usuário já existe
+        const exists = users.find(u => u.id === user.id);
+        if (!exists) {
+            // Adicionar novo usuário
+            users.push({
+                id: user.id,
+                username: user.username,
+                discriminator: user.discriminator,
+                ip: userIP,
+                firstLogin: new Date().toISOString()
+            });
+
+            // 3. Salvar no GitHub (Update/Create)
+            const newContent = b64EncodeUnicode(JSON.stringify(users, null, 2));
+            const body = {
+                message: `Add user ${user.username}`,
+                content: newContent
+            };
+            if (sha) body.sha = sha;
+
+            const putReq = await fetch(apiUrl, {
+                method: "PUT",
+                headers: { 
+                    "Authorization": `token ${GITHUB_CONFIG.TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            });
+
+            if(putReq.ok) {
+                statusSpan.innerText = "Salvo no GitHub ✅";
+                statusSpan.style.color = "var(--green)";
+            } else {
+                statusSpan.innerText = "Erro ao Salvar ❌";
+            }
+        } else {
+            statusSpan.innerText = "Sincronizado ✅";
+        }
+
+    } catch (error) {
+        console.error("Erro GitHub:", error);
+        statusSpan.innerText = "Falha na Conexão ⚠️";
+    }
+}
+
+// Ler usuários para o painel Admin
+async function carregarUsuariosGitHub() {
+    const list = document.getElementById("users-list");
+    list.innerHTML = "<p>Carregando database...</p>";
+    
+    if(GITHUB_CONFIG.TOKEN === "SEU_TOKEN_GITHUB_AQUI") {
+        list.innerHTML = "<p style='color:red'>ERRO: Token GitHub não configurado no código.</p>";
+        return;
+    }
+
+    const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`;
+
+    try {
+        const res = await fetch(apiUrl, {
+            headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` }
+        });
+        
+        if(!res.ok) throw new Error("Database vazia ou inacessível");
+        
+        const data = await res.json();
+        const content = b64DecodeUnicode(data.content);
+        globalGitHubUsers = JSON.parse(content); // Salva no cache global
+        
+        list.innerHTML = "";
+        
+        if(globalGitHubUsers.length === 0) {
+             list.innerHTML = "<p>Nenhum usuário registrado.</p>";
+             return;
+        }
+
+        // Ordenar: mais recentes primeiro
+        globalGitHubUsers.reverse().forEach(u => {
+             const isBlack = blacklisted.includes(u.id) || blacklisted.includes(u.ip);
+             list.innerHTML += `
+              <div class="user-list-item">
+                <div style="text-align:left;">
+                  <b style="color:var(--orange)">${u.username}#${u.discriminator}</b><br>
+                  <span class="tag tag-ip">ID: ${u.id}</span>
+                  <span class="tag tag-ip">IP: ${u.ip}</span>
+                </div>
+                <button class="${isBlack ? 'success' : 'danger'}" 
+                  onclick="forceBlacklist('${u.id}')" style="margin:0; padding:5px 10px; font-size:12px;">
+                  ${isBlack ? 'Desbloquear' : 'BLACKLIST'}
+                </button>
+              </div>
+            `;
+        });
+
+    } catch(e) {
+        list.innerHTML = `<p style='color:red'>Erro: ${e.message}</p>`;
+    }
 }
 
 /* ================= LÓGICA DE PEDIDOS ================= */
@@ -565,7 +729,6 @@ function checkAdminLockout(){
   const lockTime = localStorage.getItem('admin_lock_until');
   if(lockTime && Date.now() < lockTime){
     document.getElementById('admin-block-overlay').style.display = 'grid';
-    // Timer simples
     setInterval(() => {
       const remaining = Math.ceil((localStorage.getItem('admin_lock_until') - Date.now()) / 1000);
       if(remaining <= 0) location.reload();
@@ -580,13 +743,12 @@ function verificarAdmin(){
   if(pass === CONFIG.ADMIN_PASS){
     document.getElementById("painel-login").classList.add("hidden");
     document.getElementById("painel-dashboard").classList.remove("hidden");
-    carregarDadosPainel();
+    carregarDadosPainel(); // Carrega tudo
     verificarMaster();
   } else {
     tentativas++;
     alert(`Senha Incorreta! (${tentativas}/3)`);
     if(tentativas >= 3){
-      // Bloquear por 5 minutos
       const unlockTime = Date.now() + (5 * 60 * 1000);
       localStorage.setItem('admin_lock_until', unlockTime);
       checkAdminLockout();
@@ -601,38 +763,15 @@ function sairAdmin(){
 }
 
 function carregarDadosPainel(){
-  // 1. Renderizar Lista de Usuários Conectados
-  const u = JSON.parse(localStorage.getItem("discord_user"));
-  const list = document.getElementById("users-list");
-  list.innerHTML = "";
-  
-  // Como não temos backend, mostramos o usuário atual como exemplo
-  if(u) {
-    const isBlack = blacklisted.includes(u.id) || blacklisted.includes(userIP);
-    list.innerHTML += `
-      <div class="user-list-item">
-        <div>
-          <b>${u.username}</b> (Você) <br> 
-          <span class="tag tag-ip">IP: ${userIP}</span>
-          <span class="tag tag-ip">ID: ${u.id}</span>
-        </div>
-        <button class="${isBlack ? 'success' : 'danger'}" 
-          onclick="forceBlacklist('${u.id}')" style="margin:0; padding:5px 10px; font-size:12px;">
-          ${isBlack ? 'Desbloquear' : 'BLACKLIST'}
-        </button>
-      </div>
-    `;
-  } else {
-    list.innerHTML = "<p>Nenhum usuário conectado (necessário login Discord).</p>";
-  }
+  // 1. Renderizar Lista Real do GitHub
+  carregarUsuariosGitHub();
 
-  // 2. Renderizar Códigos
+  // 2. Renderizar Códigos Promocionais
   renderPromos();
 }
 
 /* --- Lógica de Blacklist --- */
 function checkBlacklist(){
-  // Checa IP
   if(blacklisted.includes(userIP)) bloquearAcessoTotal();
 }
 
@@ -658,7 +797,8 @@ function toggleBlacklist(){
     alert(`${target} ADICIONADO à Blacklist.`);
   }
   localStorage.setItem('firepg_blacklist', JSON.stringify(blacklisted));
-  carregarDadosPainel();
+  // Recarrega a lista para atualizar visualmente quem está banido
+  carregarUsuariosGitHub(); 
 }
 
 function forceBlacklist(target){
@@ -704,6 +844,7 @@ function verificarMaster(){
   const msg = document.getElementById("master-msg");
   const actions = document.getElementById("master-actions");
   
+  // Verifica apenas se o usuário está logado e é o Master
   if(u && u.id === CONFIG.MASTER_ID){
     msg.classList.add("hidden");
     actions.classList.remove("hidden");
