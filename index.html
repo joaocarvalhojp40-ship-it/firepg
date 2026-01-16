@@ -20,6 +20,7 @@
 
 *{box-sizing:border-box;font-family:'Inter',Arial,sans-serif}
 body{margin:0;background:#050505;color:#fff;padding-bottom:50px}
+
 .hidden{display:none!important}
 .fade-in{animation:fadeIn .5s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
@@ -33,8 +34,13 @@ nav{
   backdrop-filter:blur(10px);
   border-bottom:1px solid var(--border)
 }
-nav button{background:transparent;border:none;color:var(--gray)}
-nav button.active{color:#fff;border-bottom:2px solid var(--orange)}
+nav button{
+  background:transparent;border:none;color:var(--gray);
+  font-size:1rem;cursor:pointer
+}
+nav button.active{
+  color:#fff;border-bottom:2px solid var(--orange)
+}
 
 /* ===== LOGO ===== */
 .logo{
@@ -66,33 +72,58 @@ button{
   margin-top:16px;
   background:linear-gradient(90deg,var(--red),var(--orange));
   border:none;padding:14px 22px;
-  border-radius:14px;color:#fff;font-weight:700;cursor:pointer
+  border-radius:14px;color:#fff;
+  font-weight:700;cursor:pointer
 }
 button.danger{background:var(--error)}
 button.success{background:var(--green)}
 
 /* ===== PERFIL ===== */
 .profile-header{display:flex;gap:20px;align-items:center}
-.avatar{width:80px;height:80px;border-radius:50%;border:2px solid var(--orange)}
+.avatar{
+  width:80px;height:80px;border-radius:50%;
+  border:2px solid var(--orange)
+}
 
-/* ===== LISTA USERS ===== */
+/* ===== USERS LIST ===== */
 .user-list-item{
   display:flex;justify-content:space-between;
+  align-items:center;
   background:#000;padding:10px;
   border-radius:8px;margin-bottom:6px
 }
 
 /* ===== LOCK ===== */
 #lock{
-  position:fixed;inset:0;background:rgba(0,0,0,.92);
-  display:flex;align-items:center;justify-content:center;z-index:999
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.92);
+  display:flex;align-items:center;
+  justify-content:center;z-index:999
 }
 .lock-box{
   background:var(--glass);
   border:1px solid var(--border);
   border-radius:22px;
-  padding:35px;text-align:center;max-width:400px
+  padding:35px;text-align:center;
+  max-width:400px
 }
+
+/* ===== FOOTER ===== */
+footer{
+  margin-top:60px;padding:40px 20px;
+  background:#080808;
+  border-top:1px solid var(--border);
+  color:var(--gray)
+}
+.footer-grid{
+  max-width:1100px;margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:30px
+}
+footer b{color:#fff}
+footer a{color:var(--orange);text-decoration:none}
+footer a:hover{text-decoration:underline}
 </style>
 </head>
 
@@ -108,14 +139,15 @@ button.success{background:var(--green)}
 </div>
 
 <nav id="navbar" class="hidden">
-  <button onclick="mudarAba('inicio')" id="btn-inicio" class="active">Início</button>
-  <button onclick="mudarAba('loja')" id="btn-loja">Loja</button>
-  <button onclick="mudarAba('painel')" id="btn-painel">Painel</button>
+  <button id="btn-inicio" class="active" onclick="mudarAba('inicio')">Início</button>
+  <button id="btn-loja" onclick="mudarAba('loja')">Loja</button>
+  <button id="btn-painel" onclick="mudarAba('painel')">Painel do Técnico</button>
 </nav>
 
 <div class="logo">FirePG</div>
 <p class="subtitle">Bots profissionais para Discord</p>
 
+<!-- ================= INÍCIO ================= -->
 <section id="aba-inicio" class="fade-in">
 
 <div class="glass">
@@ -125,7 +157,9 @@ button.success{background:var(--green)}
       <h2 id="user-name">Carregando...</h2>
       <p>ID: <span id="user-id">...</span></p>
       <p>IP: <b id="user-ip">...</b></p>
-      <p style="font-size:.8rem;color:var(--green)">Status: Seguro ✅</p>
+      <p style="font-size:.8rem;color:var(--green)">
+        Status de Segurança: Protegido ✅
+      </p>
     </div>
   </div>
   <button class="danger" onclick="logout()">Sair</button>
@@ -148,6 +182,17 @@ button.success{background:var(--green)}
 
 </section>
 
+<!-- ================= LOJA ================= -->
+<section id="aba-loja" class="hidden fade-in">
+<div class="glass">
+  <h2 style="text-align:center">Planos Disponíveis</h2>
+  <p style="text-align:center;color:var(--gray)">
+    Pagamentos realizados somente via Discord.
+  </p>
+</div>
+</section>
+
+<!-- ================= PAINEL ================= -->
 <section id="aba-painel" class="hidden fade-in">
 <div class="glass">
   <h2>Usuários Registrados</h2>
@@ -155,32 +200,50 @@ button.success{background:var(--green)}
 </div>
 </section>
 
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <b>HOSPEDAGENS</b><br>
+      Bot — Discloud<br>
+      Site — Vercel
+    </div>
+    <div>
+      <b>LINKS DIRETOS</b><br>
+      Discord — <a href="https://discord.gg/BaTeCB6E3G" target="_blank">Entrar no Servidor</a><br>
+      Site — <a href="https://firepg.vercel.app/" target="_blank">firepg.vercel.app</a>
+    </div>
+    <div>
+      <b>SUPORTE</b><br>
+      E-mail: <a href="mailto:firepg2026@outlook.com.br">firepg2026@outlook.com.br</a>
+    </div>
+  </div>
+</footer>
+
 <script>
-/* ================= CONFIGURAÇÕES (MANTIDAS) ================= */
+/* ================= CONFIGURAÇÕES ================= */
 const CONFIG = {
   DISCORD_CLIENT_ID: "1461307002570412084",
   DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
-  OAUTH_REDIRECT: location.origin,
-  BACKEND_URL: "https://firepg-backend.onrender.com", // ajuste
-  MASTER_ID: "1049848388247625818"
+  BACKEND_URL: "https://firepg-backend.onrender.com",
+  OAUTH_REDIRECT: "https://firepg.vercel.app/"
 };
 
-/* ================= VARIÁVEIS ================= */
-let userIP = "Indisponível";
 let currentUser = null;
+let userIP = "Indisponível";
 
 /* ================= INIT ================= */
 window.onload = async () => {
-  try {
+  try{
     const ip = await fetch("https://api.ipify.org?format=json").then(r=>r.json());
     userIP = ip.ip;
-  } catch {}
-
+    document.getElementById("user-ip").innerText = userIP;
+  }catch{}
   checkDiscordLogin();
 };
 
-/* ================= LOGIN DISCORD ================= */
-function login() {
+/* ================= LOGIN ================= */
+function login(){
   location.href =
     "https://discord.com/oauth2/authorize" +
     `?client_id=${CONFIG.DISCORD_CLIENT_ID}` +
@@ -189,106 +252,85 @@ function login() {
     `&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}`;
 }
 
-function logout() {
-  localStorage.removeItem("firepg_user");
+function logout(){
+  localStorage.clear();
   location.reload();
 }
 
-async function checkDiscordLogin() {
+async function checkDiscordLogin(){
   const code = new URLSearchParams(location.search).get("code");
-  if (!code) return;
+  if(!code) return;
 
-  const res = await fetch(`${CONFIG.BACKEND_URL}/auth/discord`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  const res = await fetch(`${CONFIG.BACKEND_URL}/auth/discord`,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({
       code,
       redirect: CONFIG.OAUTH_REDIRECT
     })
   });
 
-  if (!res.ok) return alert("Erro ao autenticar com Discord.");
-
   const user = await res.json();
   currentUser = user;
-  localStorage.setItem("firepg_user", JSON.stringify(user));
 
-  history.replaceState(null, "", location.pathname);
-  renderUser(user);
-}
-
-/* ================= RENDER USER ================= */
-function renderUser(u) {
-  document.getElementById("lock").style.display = "none";
+  document.getElementById("lock").style.display="none";
   document.getElementById("navbar").classList.remove("hidden");
+  document.getElementById("user-name").innerText=user.username;
+  document.getElementById("user-id").innerText=user.id;
+  document.getElementById("avatar").src=
+    `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`;
 
-  document.getElementById("user-name").innerText = u.username;
-  document.getElementById("user-id").innerText = u.id;
-  document.getElementById("avatar").src =
-    `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
+  carregarUsuarios();
+  history.replaceState(null,"",location.pathname);
 }
 
-/* ================= PEDIDOS (WEBHOOK MELHORADO) ================= */
-function enviarPedido() {
-  if (!currentUser) return alert("Usuário não autenticado.");
+/* ================= PEDIDO ================= */
+function enviarPedido(){
+  if(!currentUser) return alert("Não autenticado.");
 
-  const desc = document.getElementById("descricao").value;
-  const lang = document.getElementById("linguagem").value;
-  const estilo = document.getElementById("estilo").value;
-  const promo = document.getElementById("promo-code").value || "Nenhum";
-
-  if (!desc || !lang || !estilo)
-    return alert("Preencha todos os campos.");
-
-  fetch(CONFIG.DISCORD_WEBHOOK_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      embeds: [{
-        title: "🔥 Novo Pedido FirePG",
-        color: 16740352,
-        fields: [
-          { name: "👤 Usuário", value: `${currentUser.username} (${currentUser.id})` },
-          { name: "📝 Descrição", value: desc },
-          { name: "💻 Linguagem", value: lang },
-          { name: "🎨 Estilo", value: estilo },
-          { name: "🎟️ Cupom", value: promo },
-          { name: "🌐 IP", value: userIP },
-          { name: "🕒 Data", value: new Date().toLocaleString("pt-BR") }
+  fetch(CONFIG.DISCORD_WEBHOOK_URL,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({
+      embeds:[{
+        title:"🔥 Novo Pedido FirePG",
+        color:16740352,
+        fields:[
+          {name:"Usuário",value:`${currentUser.username} (${currentUser.id})`},
+          {name:"IP",value:userIP},
+          {name:"Data",value:new Date().toLocaleString("pt-BR")}
         ],
-        footer: { text: "FirePG • Solicitação segura via Backend" }
+        footer:{text:"FirePG • Backend Seguro"}
       }]
     })
-  }).then(() => {
-    alert("Pedido enviado com sucesso!");
-    document.getElementById("descricao").value = "";
-  });
+  }).then(()=>alert("Pedido enviado com sucesso!"));
 }
 
-/* ================= ADMIN: USUÁRIOS ================= */
-async function carregarUsuariosGitHub() {
-  const list = document.getElementById("users-list");
-  list.innerHTML = "Carregando...";
-
+/* ================= USERS ================= */
+async function carregarUsuarios(){
   const res = await fetch(`${CONFIG.BACKEND_URL}/users`);
-  if (!res.ok) {
-    list.innerHTML = "Erro ao carregar usuários.";
-    return;
-  }
-
   const users = await res.json();
-  list.innerHTML = "";
-
-  users.forEach(u => {
-    list.innerHTML += `
+  const list = document.getElementById("users-list");
+  list.innerHTML="";
+  users.forEach(u=>{
+    list.innerHTML+=`
       <div class="user-list-item">
-        <div>
-          <b>${u.username}</b><br>
-          <small>${u.id}</small>
-        </div>
+        <b>${u.username}</b>
+        <small>${u.id}</small>
       </div>`;
   });
 }
+
+/* ================= NAV ================= */
+function mudarAba(a){
+  ["inicio","loja","painel"].forEach(i=>{
+    document.getElementById("aba-"+i).classList.add("hidden");
+    document.getElementById("btn-"+i).classList.remove("active");
+  });
+  document.getElementById("aba-"+a).classList.remove("hidden");
+  document.getElementById("btn-"+a).classList.add("active");
+}
 </script>
+
 </body>
 </html>
