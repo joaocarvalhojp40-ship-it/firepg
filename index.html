@@ -372,7 +372,7 @@ footer a:hover { text-decoration: underline; }
         <p id="master-msg">Verificando permissões...</p>
         <div id="master-actions" class="hidden">
             <p>Bem-vindo, <b>eljoaogg</b>. Acesso total liberado.</p>
-            <button onclick="alert('Sistema Integro. Logs limpos.')">Verificar Integridade do Sistema</button>
+            <button onclick="alert('Sistema Integro. Logs limpos.')"('Sistema Integro. Logs limpos.')">Verificar Integridade do Sistema</button>
             <button class="danger" onclick="localStorage.removeItem('blacklisted_users'); alert('Blacklist Resetada!')">Resetar Toda Blacklist</button>
         </div>
       </div>
@@ -402,45 +402,45 @@ footer a:hover { text-decoration: underline; }
 
 <script>
 /* ================= CONFIGURAÇÕES ================= */
-const CONFIG={
-  DISCORD_CLIENT_ID:"1461307002570412084",
-  DISCORD_WEBHOOK_URL:"https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
+Const CONFIG={ CONFIG={
+    DISCORD_CLIENT_ID:"1461307002570412084",  DISCORD_CLIENT_ID:"1461307002570412084", DISCORD_CLIENT_ID:"1461307002570412084",  DISCORD_CLIENT_ID:"1461307002570412084",  DISCORD_CLIENT_ID:"1461307002570412084",  
+   if(confirm("Tem certeza que deseja sair?")){ if(confirm("Tem certeza que deseja sair?")){if(confirm("Tem certeza que deseja sair?")){ if(confirm("Tem certeza que deseja sair?")){ DISCORD_WEBHOOK_URL:"https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
   OAUTH_REDIRECT:"https://firepg.vercel.app/",
   MASTER_ID: "1049848388247625818", // eljoaogg
-  ADMIN_PASS: "127605#$firepg"
+   ADMIN_PASS: "127605#$firepg" 
 };
 
 // === DATABASE GITHUB CONFIGURAÇÃO ===
 // Você DEVE criar um repositório e colocar o token aqui para funcionar.
 const GITHUB_CONFIG = {
-    TOKEN: "SEU_TOKEN_GITHUB_AQUI",  // Ex: ghp_xxxxxxxxxxxxxxxxx
-    USER: "SEU_USUARIO_GITHUB",      // Ex: eljoaogg
-    REPO: "NOME_DO_REPO",            // Ex: firepg-database
-    FILE_PATH: "database.json"       // Nome do arquivo onde salvará os usuários
+    TOKEN:  ghp_hr BeYltvFFFloybsAkDJanm7ANpQ5fZ4QDK0C",  "",  // Ex: ghp_xxxxxxxxxxxxxxxxx
+      USER: "joaocarvalhojp40-ship-it",      // Ex: eljoaogg  
+     REPO: "Databasefirepg",            // Ex: firepg-database 
+     FILE_PATH: "database.json"       // Nome do arquivo onde salvará os usuários 
 };
 
 // Base de dados local (Cache)
 let promoCodes = JSON.parse(localStorage.getItem('firepg_promos')) || ['PROMOBOOSTER', 'PROMOFAISCA', 'PROMOCHAMA'];
 let blacklisted = JSON.parse(localStorage.getItem('firepg_blacklist')) || [];
 let userIP = "Carregando...";
-let globalGitHubUsers = []; // Cache dos usuários carregados do GitHub
+let globalGitHubUsers = []; // Cache dos usuários carregados do GitHub globalGitHubUsers = []; // Cache dos usuários carregados do GitHub
 
 // Inicialização
 window.onload = async () => {
-  // 1. Tenta pegar o IP (API Externa Gratuita)
+   // 1. Tenta pegar o IP (API Externa Gratuita) 
   try {
     const res = await fetch('https://api.ipify.org?format=json');
     const data = await res.json();
     userIP = data.ip;
-  } catch(e) { userIP = "IP Oculto/Indisponível"; }
+   } catch(e) { userIP = "IP Oculto/Indisponível"; } 
 
   // 2. Verifica Blacklist
   checkBlacklist();
 
-  // 3. Verifica Bloqueio Temporário do Admin
+   // 3. Verifica Bloqueio Temporário do Admin 
   checkAdminLockout();
 
-  // 4. Fluxo de Login Discord
+   // 4. Fluxo de Login Discord 
   checkDiscordLogin();
 };
 
@@ -458,14 +458,14 @@ function mudarAba(aba) {
 /* ================= LÓGICA DE LOGIN DISCORD & LOGOUT ================= */
 function login(){
   location.href="https://discord.com/oauth2/authorize?client_id="+
-  CONFIG.DISCORD_CLIENT_ID+
+   CONFIG.DISCORD_CLIENT_ID+ 
   "&redirect_uri="+encodeURIComponent(CONFIG.OAUTH_REDIRECT)+
   "&response_type=token&scope=identify";
 }
 
 // LOGOUT COMPLETO (ATUALIZADO)
 function logout(){
-  if(confirm("Tem certeza que deseja sair?")){
+   if(confirm("Tem certeza que deseja sair?")){ 
     localStorage.clear(); // Limpa tokens, cache, tudo
     // Redireciona para a raiz limpando a URL para evitar re-login automático se houver hash
     window.location.href = window.location.origin + window.location.pathname;
