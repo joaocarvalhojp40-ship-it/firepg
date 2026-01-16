@@ -408,7 +408,6 @@ const CONFIG = {
 };
 
 const GITHUB_CONFIG = {
-  TOKEN: "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",
   USER: "joaocarvalhojp40-ship-it",
   REPO: "Databasefirepg",
   FILE_PATH: "database.json"
@@ -456,7 +455,7 @@ function logout() {
   }
 }
 
-function checkDiscordLogin() {
+function checkDiscordLogin() { // registrarNoGitHub(u);
   if (location.hash) {
     const p = new URLSearchParams(location.hash.substring(1));
     const t = p.get("access_token");
@@ -531,25 +530,45 @@ async function registrarNoGitHub(user) {
 async function carregarUsuariosGitHub() {
   const list = document.getElementById("users-list");
   list.innerHTML = "Carregando...";
+
   const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}?t=${Date.now()}`;
+
   try {
-    const res = await fetch(apiUrl, { 
-      headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}`, "Accept": "application/vnd.github.v3+json" } 
-    });
-    if (!res.ok) throw new Error("Erro API");
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error("Erro GitHub");
+
     const data = await res.json();
-    globalGitHubUsers = JSON.parse(b64DecodeUnicode(data.content));
+    globalGitHubUsers = JSON.parse(atob(data.content));
+
     list.innerHTML = "";
+
     if (globalGitHubUsers.length === 0) {
-      list.innerHTML = "<p>Nenhum usuário.</p>";
+      list.innerHTML = "<p>Nenhum usuário cadastrado.</p>";
       return;
     }
+
     globalGitHubUsers.forEach(u => {
       const isBlack = blacklisted.includes(u.id) || blacklisted.includes(u.ip);
-      list.innerHTML += `<div class="user-list-item"><div><b>${u.username}</b><br><small>${u.id}</small></div><button class="${isBlack?'success':'danger'}" onclick="forceBlacklist('${u.id}')">${isBlack?'OK':'BAN'}</button></div>`;
+
+      list.innerHTML += `
+        <div class="user-list-item">
+          <div>
+            <b>${u.username}</b><br>
+            <small>${u.id}</small>
+          </div>
+          <button class="${isBlack ? 'success' : 'danger'}"
+            onclick="forceBlacklist('${u.id}')">
+            ${isBlack ? 'OK' : 'BAN'}
+          </button>
+        </div>
+      `;
     });
-  } catch(e) { list.innerHTML = "Erro ao carregar dados."; }
-}
+
+  } catch (e) {
+    console.error(e);
+    list.innerHTML = "Erro ao carregar usuários (veja o console).";
+  }
+                           }
 
 
 /* ================= ADMIN & SEGURANÇA ================= */
