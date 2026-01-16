@@ -344,8 +344,6 @@ footer a:hover { text-decoration: underline; }
     
     <div class="admin-section">
       <h3>📡 Database de Usuários (GitHub Sync)</h3>
-      <p style="font-size:0.9rem; color:var(--gray)">Lista carregada diretamente do repositório remoto.</p>
-      
       <div id="users-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
         <p style="text-align:center;">Carregando dados do GitHub...</p>
       </div>
@@ -358,8 +356,7 @@ footer a:hover { text-decoration: underline; }
 
     <div class="admin-section">
       <h3>🎟️ Códigos Promocionais</h3>
-      <div id="promo-list" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
-        </div>
+      <div id="promo-list" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px;"></div>
       <div style="display:flex; gap:10px;">
         <input id="new-promo" placeholder="Novo código (ex: PROMONOVO)">
         <button class="success" onclick="addPromo()" style="margin-top:12px;">Adicionar</button>
@@ -372,8 +369,8 @@ footer a:hover { text-decoration: underline; }
         <p id="master-msg">Verificando permissões...</p>
         <div id="master-actions" class="hidden">
             <p>Bem-vindo, <b>eljoaogg</b>. Acesso total liberado.</p>
-            <button onclick="alert('Sistema Integro. Logs limpos.')"('Sistema Integro. Logs limpos.')">Verificar Integridade do Sistema</button>
-            <button class="danger" onclick="localStorage.removeItem('blacklisted_users'); alert('Blacklist Resetada!')">Resetar Toda Blacklist</button>
+            <button onclick="alert('Sistema Integro. Logs limpos.')">Verificar Integridade do Sistema</button>
+            <button class="danger" onclick="localStorage.removeItem('firepg_blacklist'); alert('Blacklist Local Resetada!')">Resetar Blacklist Local</button>
         </div>
       </div>
     </div>
@@ -402,459 +399,240 @@ footer a:hover { text-decoration: underline; }
 
 <script>
 /* ================= CONFIGURAÇÕES ================= */
-Const CONFIG={ CONFIG={
-    DISCORD_CLIENT_ID:"1461307002570412084",  DISCORD_CLIENT_ID:"1461307002570412084", DISCORD_CLIENT_ID:"1461307002570412084",  DISCORD_CLIENT_ID:"1461307002570412084",  DISCORD_CLIENT_ID:"1461307002570412084",  
-   if(confirm("Tem certeza que deseja sair?")){ if(confirm("Tem certeza que deseja sair?")){if(confirm("Tem certeza que deseja sair?")){ if(confirm("Tem certeza que deseja sair?")){ DISCORD_WEBHOOK_URL:"https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
-  OAUTH_REDIRECT:"https://firepg.vercel.app/",
-  MASTER_ID: "1049848388247625818", // eljoaogg
-   ADMIN_PASS: "127605#$firepg" 
+const CONFIG = {
+  DISCORD_CLIENT_ID: "1461307002570412084",
+  DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
+  OAUTH_REDIRECT: "https://firepg.vercel.app/",
+  MASTER_ID: "1049848388247625818",
+  ADMIN_PASS: "127605#$firepg"
 };
 
-// === DATABASE GITHUB CONFIGURAÇÃO ===
-// Você DEVE criar um repositório e colocar o token aqui para funcionar.
 const GITHUB_CONFIG = {
-    TOKEN:  ghp_hr BeYltvFFFloybsAkDJanm7ANpQ5fZ4QDK0C",  "",  // Ex: ghp_xxxxxxxxxxxxxxxxx
-      USER: "joaocarvalhojp40-ship-it",      // Ex: eljoaogg  
-     REPO: "Databasefirepg",            // Ex: firepg-database 
-     FILE_PATH: "database.json"       // Nome do arquivo onde salvará os usuários 
+  TOKEN: "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",
+  USER: "joaocarvalhojp40-ship-it",
+  REPO: "Databasefirepg",
+  FILE_PATH: "database.json"
 };
 
-// Base de dados local (Cache)
+/* --- Variáveis Globais --- */
 let promoCodes = JSON.parse(localStorage.getItem('firepg_promos')) || ['PROMOBOOSTER', 'PROMOFAISCA', 'PROMOCHAMA'];
 let blacklisted = JSON.parse(localStorage.getItem('firepg_blacklist')) || [];
 let userIP = "Carregando...";
-let globalGitHubUsers = []; // Cache dos usuários carregados do GitHub globalGitHubUsers = []; // Cache dos usuários carregados do GitHub
+let globalGitHubUsers = [];
 
-// Inicialização
+/* ================= INICIALIZAÇÃO ================= */
 window.onload = async () => {
-   // 1. Tenta pegar o IP (API Externa Gratuita) 
   try {
     const res = await fetch('https://api.ipify.org?format=json');
     const data = await res.json();
     userIP = data.ip;
-   } catch(e) { userIP = "IP Oculto/Indisponível"; } 
+  } catch(e) { userIP = "IP Indisponível"; }
 
-  // 2. Verifica Blacklist
   checkBlacklist();
-
-   // 3. Verifica Bloqueio Temporário do Admin 
   checkAdminLockout();
-
-   // 4. Fluxo de Login Discord 
   checkDiscordLogin();
 };
 
-/* ================= LÓGICA DE NAVEGAÇÃO ================= */
+/* ================= NAVEGAÇÃO ================= */
 function mudarAba(aba) {
   ['inicio', 'loja', 'painel'].forEach(id => {
     document.getElementById('aba-' + id).classList.add('hidden');
     document.getElementById('btn-' + id).classList.remove('active');
   });
-  
   document.getElementById('aba-' + aba).classList.remove('hidden');
   document.getElementById('btn-' + aba).classList.add('active');
 }
 
-/* ================= LÓGICA DE LOGIN DISCORD & LOGOUT ================= */
-function login(){
-  location.href="https://discord.com/oauth2/authorize?client_id="+
-   CONFIG.DISCORD_CLIENT_ID+ 
-  "&redirect_uri="+encodeURIComponent(CONFIG.OAUTH_REDIRECT)+
-  "&response_type=token&scope=identify";
+/* ================= LOGIN & LOGOUT DISCORD ================= */
+function login() {
+  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify`;
 }
 
-// LOGOUT COMPLETO (ATUALIZADO)
-function logout(){
-   if(confirm("Tem certeza que deseja sair?")){ 
-    localStorage.clear(); // Limpa tokens, cache, tudo
-    // Redireciona para a raiz limpando a URL para evitar re-login automático se houver hash
-    window.location.href = window.location.origin + window.location.pathname;
+function logout() {
+  if (confirm("Tem certeza que deseja sair?")) {
+    localStorage.removeItem("discord_token");
+    localStorage.removeItem("discord_user");
+    location.reload();
   }
 }
 
-function checkDiscordLogin(){
-  if(location.hash){
-    const p=new URLSearchParams(location.hash.substring(1));
-    const t=p.get("access_token");
-    if(t){
-      localStorage.setItem("discord_token",t);
-      history.replaceState(null,null,location.pathname);
+function checkDiscordLogin() {
+  if (location.hash) {
+    const p = new URLSearchParams(location.hash.substring(1));
+    const t = p.get("access_token");
+    if (t) {
+      localStorage.setItem("discord_token", t);
+      history.replaceState(null, null, location.pathname);
     }
   }
 
-  const token=localStorage.getItem("discord_token");
-  if(token){
-    fetch("https://discord.com/api/users/@me",{
-      headers:{Authorization:"Bearer "+token}
-    }).then(r=>r.json()).then(u=>{
-      localStorage.setItem("discord_user",JSON.stringify(u));
-      
-      if(blacklisted.includes(u.id)) bloquearAcessoTotal();
+  const token = localStorage.getItem("discord_token");
+  if (token) {
+    fetch("https://discord.com/api/users/@me", {
+      headers: { Authorization: "Bearer " + token }
+    })
+    .then(r => r.json())
+    .then(u => {
+      localStorage.setItem("discord_user", JSON.stringify(u));
+      if (blacklisted.includes(u.id)) bloquearAcessoTotal();
 
-      if(!localStorage.getItem("entrada"))
-        localStorage.setItem("entrada",new Date().toLocaleDateString("pt-BR"));
-
-      document.getElementById("lock").style.display="none";
+      document.getElementById("lock").style.display = "none";
       document.getElementById("navbar").classList.remove("hidden");
-      mudarAba('inicio');
-
-      document.getElementById("user-name").innerText = u.username + "#" + u.discriminator;
+      
+      document.getElementById("user-name").innerText = u.username;
       document.getElementById("user-id").innerText = u.id;
-      document.getElementById("data-entrada").innerText = localStorage.getItem("entrada");
-      document.getElementById("total-pedidos").innerText = localStorage.getItem("total")||0;
       document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
       
-      // REGISTRAR NO GITHUB AUTOMATICAMENTE
-      registrarNoGitHub(u);
+      if (!localStorage.getItem("entrada")) {
+        localStorage.setItem("entrada", new Date().toLocaleDateString("pt-BR"));
+      }
+      document.getElementById("data-entrada").innerText = localStorage.getItem("entrada");
+      document.getElementById("total-pedidos").innerText = localStorage.getItem("total") || 0;
 
-    }).catch((e) => {
-        console.error(e);
-        logout(); // Se der erro no token, faz logout
-    });
+      registrarNoGitHub(u);
+    })
+    .catch(() => logout());
   }
 }
 
-/* ================= INTEGRAÇÃO GITHUB (DATABASE AUTOMÁTICA) ================= */
-
-// Função para codificar/decodificar Base64 (Unicode Safe)
+/* ================= DATABASE GITHUB ================= */
 function b64EncodeUnicode(str) {
-    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-        function(match, p1) { return String.fromCharCode('0x' + p1); }));
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
 }
 function b64DecodeUnicode(str) {
-    return decodeURIComponent(atob(str).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+    return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
 }
 
 async function registrarNoGitHub(user) {
     const statusSpan = document.getElementById("db-status");
     statusSpan.innerText = "Sincronizando...";
-
-    // Verifica se os dados do GitHub foram configurados
-    if(GITHUB_CONFIG.TOKEN === "SEU_TOKEN_GITHUB_AQUI") {
-        statusSpan.innerText = "Erro Config (Token)";
-        return;
-    }
-
     const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`;
 
     try {
-        // 1. Tentar ler o arquivo existente
         let users = [];
         let sha = null;
-
-        const getReq = await fetch(apiUrl, {
-            headers: { 
-                "Authorization": `token ${GITHUB_CONFIG.TOKEN}`,
-                "Accept": "application/vnd.github.v3+json"
-            }
-        });
+        const getReq = await fetch(apiUrl, { headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` } });
 
         if (getReq.ok) {
             const data = await getReq.json();
-            const content = b64DecodeUnicode(data.content);
-            users = JSON.parse(content);
+            users = JSON.parse(b64DecodeUnicode(data.content));
             sha = data.sha;
-        } else if (getReq.status === 404) {
-            // Arquivo não existe, vamos criar do zero
-            console.log("Database não encontrada. Criando nova...");
-        } else {
-            throw new Error("Erro ao acessar GitHub API");
         }
 
-        // 2. Verificar se usuário já existe
-        const exists = users.find(u => u.id === user.id);
-        if (!exists) {
-            // Adicionar novo usuário
-            users.push({
-                id: user.id,
-                username: user.username,
-                discriminator: user.discriminator,
-                ip: userIP,
-                firstLogin: new Date().toISOString()
-            });
-
-            // 3. Salvar no GitHub (Update/Create)
-            const newContent = b64EncodeUnicode(JSON.stringify(users, null, 2));
-            const body = {
-                message: `Add user ${user.username}`,
-                content: newContent
-            };
-            if (sha) body.sha = sha;
-
-            const putReq = await fetch(apiUrl, {
-                method: "PUT",
-                headers: { 
-                    "Authorization": `token ${GITHUB_CONFIG.TOKEN}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(body)
-            });
-
-            if(putReq.ok) {
-                statusSpan.innerText = "Salvo no GitHub ✅";
-                statusSpan.style.color = "var(--green)";
-            } else {
-                statusSpan.innerText = "Erro ao Salvar ❌";
-            }
-        } else {
-            statusSpan.innerText = "Sincronizado ✅";
+        if (!users.find(u => u.id === user.id)) {
+            users.push({ id: user.id, username: user.username, ip: userIP, date: new Date().toISOString() });
+            const body = { message: `Add ${user.username}`, content: b64EncodeUnicode(JSON.stringify(users, null, 2)), sha: sha };
+            await fetch(apiUrl, { method: "PUT", headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` }, body: JSON.stringify(body) });
         }
-
-    } catch (error) {
-        console.error("Erro GitHub:", error);
-        statusSpan.innerText = "Falha na Conexão ⚠️";
-    }
+        statusSpan.innerText = "Sincronizado ✅";
+    } catch (e) { statusSpan.innerText = "Erro DB ⚠️"; }
 }
 
-// Ler usuários para o painel Admin
 async function carregarUsuariosGitHub() {
     const list = document.getElementById("users-list");
-    list.innerHTML = "<p>Carregando database...</p>";
-    
-    if(GITHUB_CONFIG.TOKEN === "SEU_TOKEN_GITHUB_AQUI") {
-        list.innerHTML = "<p style='color:red'>ERRO: Token GitHub não configurado no código.</p>";
-        return;
-    }
-
+    list.innerHTML = "Carregando...";
     const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`;
 
     try {
-        const res = await fetch(apiUrl, {
-            headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` }
-        });
-        
-        if(!res.ok) throw new Error("Database vazia ou inacessível");
-        
+        const res = await fetch(apiUrl, { headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` } });
         const data = await res.json();
-        const content = b64DecodeUnicode(data.content);
-        globalGitHubUsers = JSON.parse(content); // Salva no cache global
-        
+        globalGitHubUsers = JSON.parse(b64DecodeUnicode(data.content));
         list.innerHTML = "";
-        
-        if(globalGitHubUsers.length === 0) {
-             list.innerHTML = "<p>Nenhum usuário registrado.</p>";
-             return;
-        }
-
-        // Ordenar: mais recentes primeiro
-        globalGitHubUsers.reverse().forEach(u => {
-             const isBlack = blacklisted.includes(u.id) || blacklisted.includes(u.ip);
-             list.innerHTML += `
-              <div class="user-list-item">
-                <div style="text-align:left;">
-                  <b style="color:var(--orange)">${u.username}#${u.discriminator}</b><br>
-                  <span class="tag tag-ip">ID: ${u.id}</span>
-                  <span class="tag tag-ip">IP: ${u.ip}</span>
-                </div>
-                <button class="${isBlack ? 'success' : 'danger'}" 
-                  onclick="forceBlacklist('${u.id}')" style="margin:0; padding:5px 10px; font-size:12px;">
-                  ${isBlack ? 'Desbloquear' : 'BLACKLIST'}
-                </button>
-              </div>
-            `;
+        globalGitHubUsers.forEach(u => {
+            const isBlack = blacklisted.includes(u.id) || blacklisted.includes(u.ip);
+            list.innerHTML += `<div class="user-list-item"><div><b>${u.username}</b><br><small>${u.id} | ${u.ip}</small></div><button class="${isBlack?'success':'danger'}" onclick="forceBlacklist('${u.id}')">${isBlack?'OK':'BAN'}</button></div>`;
         });
-
-    } catch(e) {
-        list.innerHTML = `<p style='color:red'>Erro: ${e.message}</p>`;
-    }
+    } catch(e) { list.innerHTML = "Erro ao carregar."; }
 }
 
-/* ================= LÓGICA DE PEDIDOS ================= */
-function enviarPedido(){
-  const last=localStorage.getItem("last_request");
-  if(last && Date.now()-last<3600000)
-    return alert("Você só pode solicitar a cada 1 hora.");
-
-  const u=JSON.parse(localStorage.getItem("discord_user"));
-  if(!u) return;
-
-  const desc = document.getElementById("descricao").value;
-  const lang = document.getElementById("linguagem").value;
-  const style = document.getElementById("estilo").value;
-  const code = document.getElementById("promo-code").value.trim().toUpperCase();
-
-  // Validação de campos
-  if(!desc || !lang || !style) return alert("Preencha todos os campos obrigatórios.");
-
-  // Validação de Código Promocional
-  let promoMessage = "Nenhum código";
-  if(code !== "") {
-    if(promoCodes.includes(code)) {
-      promoMessage = `✅ Código Válido: ${code}`;
-    } else {
-      return alert("❌ Código promocional inválido!");
-    }
-  }
-
-  fetch(CONFIG.DISCORD_WEBHOOK_URL,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      embeds:[{
-        title:"🔥 Nova Solicitação — FirePG",
-        color:16729344,
-        fields:[
-          {name:"Usuário",value:`${u.username}#${u.discriminator}`, inline: true},
-          {name:"ID",value:u.id, inline: true},
-          {name:"IP (Segurança)", value: userIP || "N/A", inline: true},
-          {name:"Estilo",value:style, inline: true},
-          {name:"Linguagem",value:lang, inline: true},
-          {name:"Promoção",value:promoMessage, inline: true},
-          {name:"Descrição",value:desc}
-        ],
-        footer: { text: "FirePG Systems" },
-        timestamp: new Date().toISOString()
-      }],
-      components:[{
-        type:1,
-        components:[{
-          type:2, style:5, label:"Ver perfil", url:"https://discord.com/users/"+u.id
-        }]
-      }]
-    })
-  }).then(()=>{
-    localStorage.setItem("last_request",Date.now());
-    localStorage.setItem("total",(Number(localStorage.getItem("total")||0)+1));
-    alert("Solicitação enviada com sucesso!");
-    location.reload();
-  });
-}
-
-/* ================= LÓGICA DO ADMIN ================= */
+/* ================= ADMIN & SEGURANÇA ================= */
 let tentativas = 0;
+function verificarAdmin() {
+  const pass = document.getElementById("admin-pass").value;
+  if (pass === CONFIG.ADMIN_PASS) {
+    document.getElementById("painel-login").classList.add("hidden");
+    document.getElementById("painel-dashboard").classList.remove("hidden");
+    carregarUsuariosGitHub();
+    renderPromos();
+    verificarMaster();
+  } else {
+    tentativas++;
+    if(tentativas >= 3) {
+        localStorage.setItem('admin_lock_until', Date.now() + 300000);
+        checkAdminLockout();
+    }
+    alert("Senha incorreta!");
+  }
+}
 
-function checkAdminLockout(){
-  const lockTime = localStorage.getItem('admin_lock_until');
-  if(lockTime && Date.now() < lockTime){
+function sairAdmin() {
+  document.getElementById("painel-dashboard").classList.add("hidden");
+  document.getElementById("painel-login").classList.remove("hidden");
+}
+
+function checkAdminLockout() {
+  const lock = localStorage.getItem('admin_lock_until');
+  if(lock && Date.now() < lock) {
     document.getElementById('admin-block-overlay').style.display = 'grid';
     setInterval(() => {
-      const remaining = Math.ceil((localStorage.getItem('admin_lock_until') - Date.now()) / 1000);
-      if(remaining <= 0) location.reload();
-      document.getElementById('timer-display').innerText = `${Math.floor(remaining/60)}m ${remaining%60}s restantes`;
+      const rem = Math.ceil((lock - Date.now()) / 1000);
+      document.getElementById('timer-display').innerText = rem > 0 ? `${rem}s` : "Recarregue a página";
     }, 1000);
   }
 }
 
-function verificarAdmin(){
-  const pass = document.getElementById("admin-pass").value;
-  
-  if(pass === CONFIG.ADMIN_PASS){
-    document.getElementById("painel-login").classList.add("hidden");
-    document.getElementById("painel-dashboard").classList.remove("hidden");
-    carregarDadosPainel(); // Carrega tudo
-    verificarMaster();
-  } else {
-    tentativas++;
-    alert(`Senha Incorreta! (${tentativas}/3)`);
-    if(tentativas >= 3){
-      const unlockTime = Date.now() + (5 * 60 * 1000);
-      localStorage.setItem('admin_lock_until', unlockTime);
-      checkAdminLockout();
-    }
-  }
+function verificarMaster() {
+  const u = JSON.parse(localStorage.getItem("discord_user"));
+  if (u && u.id === CONFIG.MASTER_ID) document.getElementById("master-actions").classList.remove("hidden");
 }
 
-function sairAdmin(){
-  document.getElementById("painel-dashboard").classList.add("hidden");
-  document.getElementById("painel-login").classList.remove("hidden");
-  document.getElementById("admin-pass").value = "";
-}
+/* ================= BLACKLIST & PROMOS ================= */
+function checkBlacklist() { if (blacklisted.includes(userIP)) bloquearAcessoTotal(); }
+function bloquearAcessoTotal() { document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>BANIDO</h1>"; }
 
-function carregarDadosPainel(){
-  // 1. Renderizar Lista Real do GitHub
-  carregarUsuariosGitHub();
-
-  // 2. Renderizar Códigos Promocionais
-  renderPromos();
-}
-
-/* --- Lógica de Blacklist --- */
-function checkBlacklist(){
-  if(blacklisted.includes(userIP)) bloquearAcessoTotal();
-}
-
-function bloquearAcessoTotal(){
-  document.body.innerHTML = `
-    <div style="height:100vh; display:flex; align-items:center; justify-content:center; background:#000; color:red; flex-direction:column; text-align:center;">
-      <h1 style="font-size:3rem">⛔ VOCÊ FOI BANIDO</h1>
-      <p>O seu acesso à FirePG foi revogado permanentemente.</p>
-      <small>IP: ${userIP}</small>
-    </div>
-  `;
-}
-
-function toggleBlacklist(){
-  const target = document.getElementById("blacklist-input").value.trim();
-  if(!target) return alert("Digite um IP ou ID.");
-  
-  if(blacklisted.includes(target)){
-    blacklisted = blacklisted.filter(i => i !== target);
-    alert(`${target} removido da Blacklist.`);
-  } else {
-    blacklisted.push(target);
-    alert(`${target} ADICIONADO à Blacklist.`);
-  }
+function toggleBlacklist() {
+  const val = document.getElementById("blacklist-input").value.trim();
+  if (blacklisted.includes(val)) blacklisted = blacklisted.filter(i => i !== val);
+  else blacklisted.push(val);
   localStorage.setItem('firepg_blacklist', JSON.stringify(blacklisted));
-  // Recarrega a lista para atualizar visualmente quem está banido
-  carregarUsuariosGitHub(); 
+  carregarUsuariosGitHub();
 }
 
-function forceBlacklist(target){
-  document.getElementById("blacklist-input").value = target;
-  toggleBlacklist();
-}
+function forceBlacklist(id) { document.getElementById("blacklist-input").value = id; toggleBlacklist(); }
 
-/* --- Lógica de Promoções --- */
-function renderPromos(){
-  const container = document.getElementById("promo-list");
-  container.innerHTML = "";
-  promoCodes.forEach(code => {
-    container.innerHTML += `
-      <div style="background:#222; padding:8px 12px; border-radius:8px; display:flex; align-items:center; gap:8px;">
-        <b>${code}</b>
-        <span style="color:red; cursor:pointer; font-weight:bold;" onclick="removePromo('${code}')">&times;</span>
-      </div>
-    `;
+function renderPromos() {
+  const list = document.getElementById("promo-list");
+  list.innerHTML = "";
+  promoCodes.forEach(c => {
+    list.innerHTML += `<div style="background:#222;padding:5px;border-radius:5px;">${c} <span onclick="removePromo('${c}')" style="color:red;cursor:pointer;">&times;</span></div>`;
   });
   localStorage.setItem('firepg_promos', JSON.stringify(promoCodes));
 }
-
-function addPromo(){
-  const newCode = document.getElementById("new-promo").value.trim().toUpperCase();
-  if(!newCode) return;
-  if(promoCodes.includes(newCode)) return alert("Código já existe.");
-  
-  promoCodes.push(newCode);
-  document.getElementById("new-promo").value = "";
-  renderPromos();
+function addPromo() {
+  const val = document.getElementById("new-promo").value.trim().toUpperCase();
+  if(val && !promoCodes.includes(val)) { promoCodes.push(val); renderPromos(); }
 }
+function removePromo(c) { promoCodes = promoCodes.filter(p => p !== c); renderPromos(); }
 
-function removePromo(code){
-  if(confirm("Remover código " + code + "?")){
-    promoCodes = promoCodes.filter(c => c !== code);
-    renderPromos();
-  }
-}
-
-/* --- Gerenciador Geral (Master) --- */
-function verificarMaster(){
+/* ================= PEDIDOS ================= */
+function enviarPedido() {
   const u = JSON.parse(localStorage.getItem("discord_user"));
-  const msg = document.getElementById("master-msg");
-  const actions = document.getElementById("master-actions");
-  
-  // Verifica apenas se o usuário está logado e é o Master
-  if(u && u.id === CONFIG.MASTER_ID){
-    msg.classList.add("hidden");
-    actions.classList.remove("hidden");
-  } else {
-    msg.innerText = "⛔ Acesso negado. Este painel é restrito ao Gerente Geral (ID não autorizado).";
-    msg.style.color = "var(--red)";
-    actions.classList.add("hidden");
-  }
+  const desc = document.getElementById("descricao").value;
+  const promo = document.getElementById("promo-code").value.trim().toUpperCase();
+
+  if(!desc) return alert("Descreva o bot.");
+  if(promo && !promoCodes.includes(promo)) return alert("Cupom inválido.");
+
+  fetch(CONFIG.DISCORD_WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ embeds: [{ title: "Novo Pedido", fields: [{name:"User", value:u.username}, {name:"Desc", value:desc}, {name:"Promo", value:promo||"Nenhuma"}] }] })
+  }).then(() => {
+    localStorage.setItem("total", (Number(localStorage.getItem("total")||0)+1));
+    alert("Pedido enviado!");
+    location.reload();
+  });
 }
 </script>
-
 </body>
 </html>
