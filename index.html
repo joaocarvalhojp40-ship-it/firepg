@@ -213,6 +213,9 @@ footer a:hover { text-decoration: underline; }
         <h2 id="user-name">Carregando...</h2>
         <p>ID: <span id="user-id">...</span></p>
         <p>Membro desde: <b id="data-entrada"></b></p>
+        
+        <p>Plano Atual: <b id="user-plan" style="color:var(--orange); text-transform: uppercase;">Verificando...</b></p>
+        
         <p>Solicitações: <b id="total-pedidos">0</b></p>
         <p style="font-size:0.8rem; color:var(--green)">Status Database: <span id="db-status">Aguardando...</span></p>
       </div>
@@ -404,7 +407,16 @@ const CONFIG = {
   DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
   OAUTH_REDIRECT: "https://firepg.vercel.app/",
   MASTER_ID: "1049848388247625818",
-  ADMIN_PASS: "127605#$firepg"
+  ADMIN_PASS: "127605#$firepg",
+
+  // --- ATUALIZADO: CONFIGURAÇÃO DE CARGOS ---
+  // Subistitua "COLA_AQUI..." pelos IDs que copiou do Discord
+  GUILD_ID: "COLA_AQUI_O_ID_DO_TEU_SERVIDOR", 
+  ROLES: {
+    "1461945712777363509": "Booster",
+    "1461945597543055443": "Plano Chama",
+    "1461945670154846330": "Plano Faísca"
+  }
 };
 
 const GITHUB_CONFIG = {
@@ -445,7 +457,8 @@ function mudarAba(aba) {
 
 /* ================= LOGIN & LOGOUT DISCORD ================= */
 function login() {
-  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify`;
+  // ATUALIZADO: Adicionado 'guilds.members.read' ao escopo
+  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify%20guilds.members.read`;
 }
 
 function logout() {
@@ -490,9 +503,51 @@ function checkDiscordLogin() {
       document.getElementById("total-pedidos").innerText = localStorage.getItem("total") || 0;
 
       registrarNoGitHub(u);
+
+      // ATUALIZADO: Verifica o plano (cargo)
+      verificarPlanoDiscord(token);
     })
     .catch(() => logout());
   }
+}
+
+// === NOVA FUNÇÃO: VERIFICAR PLANO NO DISCORD ===
+function verificarPlanoDiscord(token) {
+  const planDisplay = document.getElementById("user-plan");
+  
+  // Verifica se o ID do servidor foi configurado
+  if(CONFIG.GUILD_ID.includes("COLA_AQUI")) {
+    planDisplay.innerText = "Erro Config (ID Servidor)";
+    return;
+  }
+
+  fetch(`https://discord.com/api/users/@me/guilds/${CONFIG.GUILD_ID}/member`, {
+    headers: { Authorization: "Bearer " + token }
+  })
+  .then(res => {
+    if(!res.ok) throw new Error("Não está no servidor");
+    return res.json();
+  })
+  .then(member => {
+    const roles = member.roles; // Array de IDs de cargos
+    let currentPlan = "Gratuito"; // Plano padrão
+
+    // Verifica cada cargo configurado
+    for (const [roleId, planName] of Object.entries(CONFIG.ROLES)) {
+        if (roles.includes(roleId)) {
+            currentPlan = planName;
+            // Se achar Booster ou Chama, dá prioridade e para o loop
+            if(planName === "Booster" || planName.includes("Chama")) break; 
+        }
+    }
+    
+    planDisplay.innerText = currentPlan;
+  })
+  .catch(err => {
+    console.error(err);
+    planDisplay.innerText = "Sem Plano / Não está no Servidor";
+    planDisplay.style.color = "var(--gray)";
+  });
 }
 
 /* ================= DATABASE GITHUB ================= */
