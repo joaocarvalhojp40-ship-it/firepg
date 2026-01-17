@@ -148,15 +148,23 @@ button.success { background: var(--green); }
   background: #0e0e0e; border: 1px solid var(--border); border-radius: 18px; padding: 25px; text-align: center; position: relative; overflow: hidden;
 }
 .plan-card h3 { 
-  font-size: 1.5rem; 
-  margin-bottom: 10px; 
-  color: var(--orange); 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  gap: 10px; 
+    font-size: 1.5rem; 
+    margin-bottom: 10px; 
+    color: var(--orange); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
 }
-.plan-card h3 img { width: 28px; height: 28px; }
+.plan-card h3 img { width: 26px; height: 26px; }
+
+/* Estilo para a Planta Laranja */
+.orange-plant {
+  filter: sepia(100%) saturate(2000%) hue-rotate(350deg) brightness(100%);
+  display: inline-block;
+  margin-left: 5px;
+}
+
 .price { font-size: 2rem; font-weight: bold; margin: 15px 0; }
 .price span { font-size: 1rem; color: var(--gray); font-weight: normal; }
 .features { list-style: none; padding: 0; text-align: left; margin: 20px 0; }
@@ -165,6 +173,11 @@ button.success { background: var(--green); }
 
 /* ===== ADMIN PAINEL ===== */
 .admin-section { border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px; }
+
+/* ===== AVALIAÇÕES ===== */
+.review-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
+.review{ text-align:center; padding:20px; border-radius:18px; border:1px solid var(--border); background: #0e0e0e; }
+.review img{ width:60px; height:60px; border-radius:50%; margin-bottom: 10px; }
 
 /* ===== FOOTER ===== */
 footer{ margin-top:60px; padding:40px 20px; background:#080808; border-top:1px solid var(--border); color:var(--gray); }
@@ -213,6 +226,7 @@ footer a:hover { text-decoration: underline; }
       <div class="user-info">
         <h2 id="user-name">Carregando...</h2>
         <p>ID: <span id="user-id">...</span></p>
+        <p>Plano Atual: <b id="user-plano" style="color:var(--orange)">Nenhum</b></p>
         <p>Membro desde: <b id="data-entrada"></b></p>
         <p>Solicitações: <b id="total-pedidos">0</b></p>
       </div>
@@ -244,6 +258,42 @@ footer a:hover { text-decoration: underline; }
     <small style="display:block; margin-top:10px; color:var(--gray)">Outros estilos somente falando diretamente com o técnico.</small>
     <button onclick="enviarPedido()">Enviar Solicitação</button>
   </div>
+
+  <div class="glass">
+    <h2>Avaliações Recentes</h2>
+    <div class="review-grid">
+      <div class="review">
+        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Jorge">
+        <b>Julieta</b>
+        <p>★★★★☆ 4,5</p>
+        <small>Atendimento rápido e bot muito bem feito.</small>
+      </div>
+      <div class="review">
+        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Maria">
+        <b>Maria</b>
+        <p>★★★★☆ 4,0</p>
+        <small>Gostei bastante da qualidade e suporte.</small>
+      </div>
+      <div class="review">
+        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Augusto">
+        <b>Augusto</b>
+        <p>★★★★★ 5,0</p>
+        <small>Excelente, superou minhas expectativas.</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass">
+    <h2>Documentação Oficial</h2>
+    <div style="line-height: 1.6; color: #ddd;">
+      <p><b>1. Termos de Serviço:</b> A contratação de serviços da FirePG implica na aceitação de que o produto é digital, personalizado e intransferível.</p>
+      <p><b>2. Política de Reembolso:</b> Reembolsos são aplicáveis exclusivamente antes do início do desenvolvimento do código. Após o início, não há devolução.</p>
+      <p><b>3. Prazos de Entrega:</b> O tempo de entrega é uma estimativa baseada na complexidade e fila de pedidos. Atrasos podem ocorrer.</p>
+      <p><b>4. Canal de Suporte:</b> Todo o suporte técnico é realizado única e exclusivamente via servidor do Discord.</p>
+      <p><b>5. Métodos de Pagamento:</b> Aceitamos apenas transferências via PIX.</p>
+      <p><b>6. Diretrizes de Uso:</b> É estritamente proibido solicitar bots que violem os Termos de Serviço (ToS) do Discord.</p>
+    </div>
+  </div>
 </section>
 
 <section id="aba-loja" class="hidden fade-in">
@@ -253,7 +303,7 @@ footer a:hover { text-decoration: underline; }
     
     <div class="plans-grid">
       <div class="plan-card">
-        <h3><img src="faisca.png" alt="Ícone"> Plano Faísca</h3>
+        <h3><img src="faisca.png">Plano Faísca</h3>
         <div class="price">R$ 2,50<span>/mês</span></div>
         <ul class="features">
           <li>Até <b>02 estilos</b> de bot</li>
@@ -265,7 +315,7 @@ footer a:hover { text-decoration: underline; }
 
       <div class="plan-card" style="border-color: var(--orange); box-shadow: 0 0 20px rgba(255,122,24,0.1);">
         <span class="badge">Mais Popular</span>
-        <h3><img src="chama.png" alt="Ícone"> Plano Chama</h3>
+        <h3><img src="chama.png">Plano Chama</h3>
         <div class="price">R$ 4,50<span>/mês</span></div>
         <ul class="features">
           <li>Até <b>04 estilos</b> de bot</li>
@@ -277,10 +327,7 @@ footer a:hover { text-decoration: underline; }
 
       <div class="plan-card">
         <span class="badge" style="background: var(--orange);">Booster</span>
-        <h3>
-            <img src="booster.png" alt="Ícone"> Plano Booster 
-            <span style="color:var(--orange); filter: drop-shadow(0 0 2px var(--orange));">🌱</span>
-        </h3>
+        <h3><img src="booster.png">Plano Booster <span class="orange-plant">🌱</span></h3>
         <div class="price">Grátis<span>*</span></div>
         <p style="font-size: 0.8rem; color: var(--orange);">*Ao impulsionar o servidor</p>
         <ul class="features">
@@ -311,12 +358,11 @@ footer a:hover { text-decoration: underline; }
     
     <div class="admin-section">
       <h3>🛡️ Gestão de Blacklist</h3>
-      <p style="color: var(--gray); font-size: 0.9rem;">Insira o ID do usuário para bloquear ou desbloquear o acesso ao site.</p>
+      <p style="color: var(--gray); font-size: 0.9rem;">Insira o ID do usuário para dar blocklist ou unblocklist.</p>
       <div style="display:flex; gap:10px;">
-        <input id="blacklist-input" placeholder="ID do usuário (Ex: 1049848388247625818)">
+        <input id="blacklist-input" placeholder="ID do Usuário">
         <button onclick="toggleBlacklist()" style="margin-top:12px;">Bloquear/Desbloquear</button>
       </div>
-      <div id="status-blacklist" style="margin-top: 10px; font-size: 0.8rem;"></div>
     </div>
 
     <div class="admin-section">
@@ -427,6 +473,9 @@ function checkDiscordLogin() {
       document.getElementById("user-id").innerText = u.id;
       document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
       
+      // Carrega o plano do usuário (pode ser definido manualmente pelo técnico no futuro)
+      document.getElementById("user-plano").innerText = localStorage.getItem("user_plano_" + u.id) || "Nenhum";
+
       if (!localStorage.getItem("entrada")) {
         localStorage.setItem("entrada", new Date().toLocaleDateString("pt-BR"));
       }
@@ -473,28 +522,27 @@ function checkAdminLockout() {
 
 /* ================= BLACKLIST & PROMOS ================= */
 function checkBlacklist() { 
-  const user = JSON.parse(localStorage.getItem("discord_user"));
-  if (blacklisted.includes(userIP) || (user && blacklisted.includes(user.id))) {
+  const u = JSON.parse(localStorage.getItem("discord_user"));
+  if (blacklisted.includes(userIP) || (u && blacklisted.includes(u.id))) {
     bloquearAcessoTotal();
   }
 }
 
-function bloquearAcessoTotal() { document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>ACESSO BANIDO</h1>"; }
+function bloquearAcessoTotal() { 
+  document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>ACESSO BLOQUEADO</h1>"; 
+}
 
 function toggleBlacklist() {
   const val = document.getElementById("blacklist-input").value.trim();
-  const status = document.getElementById("status-blacklist");
-  
-  if (!val) return alert("Insira um ID ou IP válido.");
+  if (!val) return alert("Insira um ID.");
 
   if (blacklisted.includes(val)) {
     blacklisted = blacklisted.filter(i => i !== val);
-    status.innerHTML = `<span style="color:var(--green)">ID ${val} removido da blacklist.</span>`;
+    alert("ID " + val + " removido da blacklist!");
   } else {
     blacklisted.push(val);
-    status.innerHTML = `<span style="color:var(--red)">ID ${val} adicionado à blacklist.</span>`;
+    alert("ID " + val + " bloqueado com sucesso!");
   }
-  
   localStorage.setItem('firepg_blacklist', JSON.stringify(blacklisted));
   document.getElementById("blacklist-input").value = "";
 }
@@ -530,7 +578,7 @@ function enviarPedido() {
     body: JSON.stringify({ embeds: [{ title: "Novo Pedido", color: 0xff7a18, fields: [{name:"Usuário", value:u.username + " (" + u.id + ")"}, {name:"Descrição", value:desc}, {name:"Cupom", value:promo||"Nenhum"}] }] })
   }).then(() => {
     localStorage.setItem("total", (Number(localStorage.getItem("total")||0)+1));
-    alert("Pedido enviado com sucesso!");
+    alert("Pedido enviado!");
     location.reload();
   });
 }
