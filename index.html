@@ -147,7 +147,16 @@ button.success { background: var(--green); }
 .plan-card { 
   background: #0e0e0e; border: 1px solid var(--border); border-radius: 18px; padding: 25px; text-align: center; position: relative; overflow: hidden;
 }
-.plan-card h3 { font-size: 1.5rem; margin-bottom: 10px; color: var(--orange); }
+.plan-card h3 { 
+  font-size: 1.5rem; 
+  margin-bottom: 10px; 
+  color: var(--orange); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 10px; 
+}
+.plan-card h3 img { width: 28px; height: 28px; }
 .price { font-size: 2rem; font-weight: bold; margin: 15px 0; }
 .price span { font-size: 1rem; color: var(--gray); font-weight: normal; }
 .features { list-style: none; padding: 0; text-align: left; margin: 20px 0; }
@@ -156,8 +165,6 @@ button.success { background: var(--green); }
 
 /* ===== ADMIN PAINEL ===== */
 .admin-section { border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px; }
-.user-list-item { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 10px; border-radius: 8px; margin-bottom: 5px; }
-.tag { padding: 2px 6px; border-radius: 4px; font-size: 12px; }
 
 /* ===== FOOTER ===== */
 footer{ margin-top:60px; padding:40px 20px; background:#080808; border-top:1px solid var(--border); color:var(--gray); }
@@ -207,9 +214,6 @@ footer a:hover { text-decoration: underline; }
         <h2 id="user-name">Carregando...</h2>
         <p>ID: <span id="user-id">...</span></p>
         <p>Membro desde: <b id="data-entrada"></b></p>
-        
-        <p>Plano Atual: <b id="user-plan" style="color:var(--orange); text-transform: uppercase;">Verificando...</b></p>
-        
         <p>Solicitações: <b id="total-pedidos">0</b></p>
       </div>
     </div>
@@ -223,6 +227,7 @@ footer a:hover { text-decoration: underline; }
     <h2>Solicitar Bot</h2>
     <input id="descricao" placeholder="Descrição detalhada do bot">
     <input id="linguagem" placeholder="Linguagem (JS, Java, Python)">
+
     <select id="estilo">
       <option value="">Selecione o estilo</option>
       <option>Moderação</option>
@@ -230,43 +235,59 @@ footer a:hover { text-decoration: underline; }
       <option>Utilidade</option>
       <option>Comunidade</option>
     </select>
-    <div style="margin-top:12px;">
-      <input id="promo-code" placeholder="Insira o código promocional (Opcional)">
-    </div>
-    <button onclick="enviarPedido()">Enviar Solicitação</button>
-  </div>
 
-  <div class="glass">
-    <h2>Avaliações Recentes</h2>
-    <div class="review-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px;">
-        <div style="text-align:center; padding:20px; border:1px solid var(--border); border-radius:18px;">
-            <b>Julieta</b><p>★★★★★</p><small>Excelente serviço!</small>
-        </div>
-        <div style="text-align:center; padding:20px; border:1px solid var(--border); border-radius:18px;">
-            <b>Augusto</b><p>★★★★★</p><small>Suporte nota 10.</small>
-        </div>
+    <div style="margin-top:12px;">
+      <label style="font-size:0.9rem; color:var(--gray)">Possui código promocional?</label>
+      <input id="promo-code" placeholder="Insira o código (Opcional)">
     </div>
+
+    <small style="display:block; margin-top:10px; color:var(--gray)">Outros estilos somente falando diretamente com o técnico.</small>
+    <button onclick="enviarPedido()">Enviar Solicitação</button>
   </div>
 </section>
 
 <section id="aba-loja" class="hidden fade-in">
   <div class="glass" style="max-width: 1200px;">
     <h2 style="text-align: center;">Planos Disponíveis</h2>
+    <p style="text-align: center; color: var(--gray); margin-bottom: 30px;">Pagamentos e ativação realizados somente via Discord.</p>
+    
     <div class="plans-grid">
       <div class="plan-card">
-        <h3>Plano Faísca ⚡</h3>
+        <h3><img src="faisca.png" alt="Ícone"> Plano Faísca</h3>
         <div class="price">R$ 2,50<span>/mês</span></div>
+        <ul class="features">
+          <li>Até <b>02 estilos</b> de bot</li>
+          <li><b>18%</b> de desconto promocional</li>
+          <li>Suporte Básico</li>
+        </ul>
         <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Contratar</button></a>
       </div>
-      <div class="plan-card" style="border-color: var(--orange);">
-        <span class="badge">Popular</span>
-        <h3>Plano Chama 🔥</h3>
+
+      <div class="plan-card" style="border-color: var(--orange); box-shadow: 0 0 20px rgba(255,122,24,0.1);">
+        <span class="badge">Mais Popular</span>
+        <h3><img src="chama.png" alt="Ícone"> Plano Chama</h3>
         <div class="price">R$ 4,50<span>/mês</span></div>
+        <ul class="features">
+          <li>Até <b>04 estilos</b> de bot</li>
+          <li><b>20%</b> de desconto promocional</li>
+          <li>Suporte Prioritário</li>
+        </ul>
         <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Contratar</button></a>
       </div>
+
       <div class="plan-card">
-        <h3>Plano Booster 🚀</h3>
+        <span class="badge" style="background: var(--orange);">Booster</span>
+        <h3>
+            <img src="booster.png" alt="Ícone"> Plano Booster 
+            <span style="color:var(--orange); filter: drop-shadow(0 0 2px var(--orange));">🌱</span>
+        </h3>
         <div class="price">Grátis<span>*</span></div>
+        <p style="font-size: 0.8rem; color: var(--orange);">*Ao impulsionar o servidor</p>
+        <ul class="features">
+          <li>Até <b>02 estilos</b> de bot</li>
+          <li><b>15%</b> de desconto adicional</li>
+          <li>Cargo exclusivo no Discord</li>
+        </ul>
         <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Impulsionar</button></a>
       </div>
     </div>
@@ -274,43 +295,58 @@ footer a:hover { text-decoration: underline; }
 </section>
 
 <section id="aba-painel" class="hidden fade-in">
+  
   <div id="painel-login" class="glass" style="text-align: center; max-width: 500px;">
     <h2>Acesso Técnico</h2>
+    <p>Insira a credencial de administrador.</p>
     <input type="password" id="admin-pass" placeholder="Senha de acesso">
     <button onclick="verificarAdmin()">Acessar Painel</button>
   </div>
 
   <div id="painel-dashboard" class="glass hidden">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2>Painel de Controle</h2>
-      <button class="danger" onclick="sairAdmin()" style="margin:0;">Sair</button>
+      <h2>Painel de Configurações</h2>
+      <button class="danger" onclick="sairAdmin()" style="margin:0; padding: 8px 16px;">Sair</button>
     </div>
     
     <div class="admin-section">
-      <h3>🚫 Gestão de Blacklist (ID Discord)</h3>
-      <div id="blacklist-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-        </div>
+      <h3>🛡️ Gestão de Blacklist</h3>
+      <p style="color: var(--gray); font-size: 0.9rem;">Insira o ID do usuário para bloquear ou desbloquear o acesso ao site.</p>
       <div style="display:flex; gap:10px;">
-        <input id="blacklist-input" placeholder="Cole o ID do usuário">
+        <input id="blacklist-input" placeholder="ID do usuário (Ex: 1049848388247625818)">
         <button onclick="toggleBlacklist()" style="margin-top:12px;">Bloquear/Desbloquear</button>
       </div>
+      <div id="status-blacklist" style="margin-top: 10px; font-size: 0.8rem;"></div>
     </div>
 
     <div class="admin-section">
       <h3>🎟️ Códigos Promocionais</h3>
       <div id="promo-list" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px;"></div>
       <div style="display:flex; gap:10px;">
-        <input id="new-promo" placeholder="Novo código">
+        <input id="new-promo" placeholder="Novo código (ex: PROMONOVO)">
         <button class="success" onclick="addPromo()" style="margin-top:12px;">Adicionar</button>
       </div>
     </div>
+
   </div>
 </section>
 
 <footer>
   <div class="footer-grid">
-    <div><b>FIREPG</b><br>2026 © Todos os direitos reservados.</div>
-    <div><b>CONTATO</b><br>firepg2026@outlook.com.br</div>
+    <div>
+      <b>HOSPEDAGENS</b><br>
+      Bot — Discloud<br>
+      Site — Vercel
+    </div>
+    <div>
+      <b>LINKS DIRETOS</b><br>
+      Discord — <a href="https://discord.gg/BaTeCB6E3G" target="_blank">Entrar no Servidor</a><br>
+      Site — <a href="https://firepg.vercel.app/" target="_blank">firepg.vercel.app</a>
+    </div>
+    <div>
+      <b>SUPORTE</b><br>
+      E-mail: <a href="mailto:firepg2026@outlook.com.br">firepg2026@outlook.com.br</a>
+    </div>
   </div>
 </footer>
 
@@ -320,21 +356,23 @@ const CONFIG = {
   DISCORD_CLIENT_ID: "1461307002570412084",
   DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
   OAUTH_REDIRECT: "https://firepg.vercel.app/",
-  MASTER_ID: "1049848388247625818",
-  ADMIN_PASS: "127605#$firepg",
-  GUILD_ID: "1461311365191958590", 
-  ROLES: {
-    "1461945712777363509": { name: "Booster", icon: "🚀" },
-    "1461945597543055443": { name: "Plano Chama", icon: "🔥" },
-    "1461945670154846330": { name: "Plano Faísca", icon: "⚡" }
-  }
+  ADMIN_PASS: "127605#$firepg"
 };
 
+/* --- Variáveis Globais --- */
 let promoCodes = JSON.parse(localStorage.getItem('firepg_promos')) || ['PROMOBOOSTER', 'PROMOFAISCA', 'PROMOCHAMA'];
 let blacklisted = JSON.parse(localStorage.getItem('firepg_blacklist')) || [];
+let userIP = "Carregando...";
 
 /* ================= INICIALIZAÇÃO ================= */
-window.onload = () => {
+window.onload = async () => {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    userIP = data.ip;
+  } catch(e) { userIP = "IP Indisponível"; }
+
+  checkBlacklist();
   checkAdminLockout();
   checkDiscordLogin();
 };
@@ -349,15 +387,17 @@ function mudarAba(aba) {
   document.getElementById('btn-' + aba).classList.add('active');
 }
 
-/* ================= LOGIN DISCORD ================= */
+/* ================= LOGIN & LOGOUT DISCORD ================= */
 function login() {
-  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify%20guilds.members.read`;
+  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify`;
 }
 
 function logout() {
-  localStorage.removeItem("discord_token");
-  localStorage.removeItem("discord_user");
-  location.reload();
+  if (confirm("Tem certeza que deseja sair?")) {
+    localStorage.removeItem("discord_token");
+    localStorage.removeItem("discord_user");
+    location.reload();
+  }
 }
 
 function checkDiscordLogin() {
@@ -377,90 +417,88 @@ function checkDiscordLogin() {
     })
     .then(r => r.json())
     .then(u => {
-      if (blacklisted.includes(u.id)) {
-          document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>ACESSO NEGADO: VOCÊ ESTÁ NA BLACKLIST</h1>";
-          return;
-      }
-      
+      localStorage.setItem("discord_user", JSON.stringify(u));
+      if (blacklisted.includes(u.id)) bloquearAcessoTotal();
+
       document.getElementById("lock").style.display = "none";
       document.getElementById("navbar").classList.remove("hidden");
+      
       document.getElementById("user-name").innerText = u.username;
       document.getElementById("user-id").innerText = u.id;
-      document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png`;
+      document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
       
-      if (!localStorage.getItem("entrada")) localStorage.setItem("entrada", new Date().toLocaleDateString("pt-BR"));
+      if (!localStorage.getItem("entrada")) {
+        localStorage.setItem("entrada", new Date().toLocaleDateString("pt-BR"));
+      }
       document.getElementById("data-entrada").innerText = localStorage.getItem("entrada");
       document.getElementById("total-pedidos").innerText = localStorage.getItem("total") || 0;
-
-      verificarPlanoDiscord(token);
     })
     .catch(() => logout());
   }
 }
 
-function verificarPlanoDiscord(token) {
-  const planDisplay = document.getElementById("user-plan");
-  
-  fetch(`https://discord.com/api/users/@me/guilds/${CONFIG.GUILD_ID}/member`, {
-    headers: { Authorization: "Bearer " + token }
-  })
-  .then(res => res.json())
-  .then(member => {
-    let currentPlan = "Gratuito";
-    let icon = "🌱 🌐"; // Ícone de planta + internet conforme pedido
-
-    if (member.roles) {
-        for (const [roleId, data] of Object.entries(CONFIG.ROLES)) {
-            if (member.roles.includes(roleId)) {
-                currentPlan = data.name;
-                icon = data.icon;
-                break;
-            }
-        }
-    }
-    planDisplay.innerHTML = `${currentPlan} ${icon}`;
-  })
-  .catch(() => {
-    planDisplay.innerHTML = `Gratuito 🌱 🌐`;
-  });
-}
-
-/* ================= ADMIN & BLACKLIST ================= */
+/* ================= ADMIN & SEGURANÇA ================= */
+let tentativas = 0;
 function verificarAdmin() {
-  if (document.getElementById("admin-pass").value === CONFIG.ADMIN_PASS) {
+  const pass = document.getElementById("admin-pass").value;
+  if (pass === CONFIG.ADMIN_PASS) {
     document.getElementById("painel-login").classList.add("hidden");
     document.getElementById("painel-dashboard").classList.remove("hidden");
-    renderBlacklist();
     renderPromos();
   } else {
+    tentativas++;
+    if(tentativas >= 3) {
+        localStorage.setItem('admin_lock_until', Date.now() + 300000);
+        checkAdminLockout();
+    }
     alert("Senha incorreta!");
   }
 }
 
-function renderBlacklist() {
-  const list = document.getElementById("blacklist-list");
-  list.innerHTML = blacklisted.length === 0 ? "Nenhum ID bloqueado." : "";
-  blacklisted.forEach(id => {
-    list.innerHTML += `<div class="user-list-item"><span>ID: ${id}</span> <button class="success" onclick="toggleBlacklist('${id}')">Remover</button></div>`;
-  });
+function sairAdmin() {
+  document.getElementById("painel-dashboard").classList.add("hidden");
+  document.getElementById("painel-login").classList.remove("hidden");
 }
 
-function toggleBlacklist(idManual = null) {
-  const id = idManual || document.getElementById("blacklist-input").value.trim();
-  if (!id) return;
+function checkAdminLockout() {
+  const lock = localStorage.getItem('admin_lock_until');
+  if(lock && Date.now() < lock) {
+    document.getElementById('admin-block-overlay').style.display = 'grid';
+    setInterval(() => {
+      const rem = Math.ceil((lock - Date.now()) / 1000);
+      document.getElementById('timer-display').innerText = rem > 0 ? `${rem}s` : "Recarregue a página";
+    }, 1000);
+  }
+}
 
-  if (blacklisted.includes(id)) {
-    blacklisted = blacklisted.filter(i => i !== id);
+/* ================= BLACKLIST & PROMOS ================= */
+function checkBlacklist() { 
+  const user = JSON.parse(localStorage.getItem("discord_user"));
+  if (blacklisted.includes(userIP) || (user && blacklisted.includes(user.id))) {
+    bloquearAcessoTotal();
+  }
+}
+
+function bloquearAcessoTotal() { document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>ACESSO BANIDO</h1>"; }
+
+function toggleBlacklist() {
+  const val = document.getElementById("blacklist-input").value.trim();
+  const status = document.getElementById("status-blacklist");
+  
+  if (!val) return alert("Insira um ID ou IP válido.");
+
+  if (blacklisted.includes(val)) {
+    blacklisted = blacklisted.filter(i => i !== val);
+    status.innerHTML = `<span style="color:var(--green)">ID ${val} removido da blacklist.</span>`;
   } else {
-    blacklisted.push(id);
+    blacklisted.push(val);
+    status.innerHTML = `<span style="color:var(--red)">ID ${val} adicionado à blacklist.</span>`;
   }
   
   localStorage.setItem('firepg_blacklist', JSON.stringify(blacklisted));
   document.getElementById("blacklist-input").value = "";
-  renderBlacklist();
 }
 
-/* ================= PROMOS & PEDIDOS ================= */
 function renderPromos() {
   const list = document.getElementById("promo-list");
   list.innerHTML = "";
@@ -475,37 +513,26 @@ function addPromo() {
   if(val && !promoCodes.includes(val)) { promoCodes.push(val); renderPromos(); }
 }
 
-function removePromo(c) { 
-  promoCodes = promoCodes.filter(p => p !== c); 
-  renderPromos(); 
-}
+function removePromo(c) { promoCodes = promoCodes.filter(p => p !== c); renderPromos(); }
 
+/* ================= PEDIDOS ================= */
 function enviarPedido() {
   const u = JSON.parse(localStorage.getItem("discord_user"));
   const desc = document.getElementById("descricao").value;
+  const promo = document.getElementById("promo-code").value.trim().toUpperCase();
+
   if(!desc) return alert("Descreva o bot.");
+  if(promo && !promoCodes.includes(promo)) return alert("Cupom inválido.");
 
   fetch(CONFIG.DISCORD_WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ embeds: [{ title: "Novo Pedido", fields: [{name:"Usuário", value:u.username}, {name:"Descrição", value:desc}] }] })
+    body: JSON.stringify({ embeds: [{ title: "Novo Pedido", color: 0xff7a18, fields: [{name:"Usuário", value:u.username + " (" + u.id + ")"}, {name:"Descrição", value:desc}, {name:"Cupom", value:promo||"Nenhum"}] }] })
   }).then(() => {
     localStorage.setItem("total", (Number(localStorage.getItem("total")||0)+1));
     alert("Pedido enviado com sucesso!");
     location.reload();
   });
-}
-
-function sairAdmin() {
-  document.getElementById("painel-dashboard").classList.add("hidden");
-  document.getElementById("painel-login").classList.remove("hidden");
-}
-
-function checkAdminLockout() {
-  const lock = localStorage.getItem('admin_lock_until');
-  if(lock && Date.now() < lock) {
-    document.getElementById('admin-block-overlay').style.display = 'grid';
-  }
 }
 </script>
 </body>
