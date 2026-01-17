@@ -158,11 +158,10 @@ button.success { background: var(--green); }
 }
 .plan-card h3 img { width: 26px; height: 26px; }
 
-/* Estilo para a Planta Laranja */
+/* Filtro para planta totalmente laranja */
 .orange-plant {
   filter: sepia(100%) saturate(2000%) hue-rotate(350deg) brightness(100%);
   display: inline-block;
-  margin-left: 5px;
 }
 
 .price { font-size: 2rem; font-weight: bold; margin: 15px 0; }
@@ -226,7 +225,7 @@ footer a:hover { text-decoration: underline; }
       <div class="user-info">
         <h2 id="user-name">Carregando...</h2>
         <p>ID: <span id="user-id">...</span></p>
-        <p>Plano Atual: <b id="user-plano" style="color:var(--orange)">Nenhum</b></p>
+        <p>Plano Atual: <b id="user-plano" style="color:var(--orange)">Gratuito</b></p>
         <p>Membro desde: <b id="data-entrada"></b></p>
         <p>Solicitações: <b id="total-pedidos">0</b></p>
       </div>
@@ -358,9 +357,9 @@ footer a:hover { text-decoration: underline; }
     
     <div class="admin-section">
       <h3>🛡️ Gestão de Blacklist</h3>
-      <p style="color: var(--gray); font-size: 0.9rem;">Insira o ID do usuário para dar blocklist ou unblocklist.</p>
+      <p style="color: var(--gray); font-size: 0.9rem;">Insira o ID do usuário para bloquear ou desbloquear.</p>
       <div style="display:flex; gap:10px;">
-        <input id="blacklist-input" placeholder="ID do Usuário">
+        <input id="blacklist-input" placeholder="ID do usuário">
         <button onclick="toggleBlacklist()" style="margin-top:12px;">Bloquear/Desbloquear</button>
       </div>
     </div>
@@ -373,7 +372,6 @@ footer a:hover { text-decoration: underline; }
         <button class="success" onclick="addPromo()" style="margin-top:12px;">Adicionar</button>
       </div>
     </div>
-
   </div>
 </section>
 
@@ -435,7 +433,9 @@ function mudarAba(aba) {
 
 /* ================= LOGIN & LOGOUT DISCORD ================= */
 function login() {
-  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify`;
+  // ADICIONADO: Scope guilds e guilds.members.read para ver cargos
+  const scopes = encodeURIComponent("identify guilds guilds.members.read");
+  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=${scopes}`;
 }
 
 function logout() {
@@ -473,8 +473,8 @@ function checkDiscordLogin() {
       document.getElementById("user-id").innerText = u.id;
       document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
       
-      // Carrega o plano do usuário (pode ser definido manualmente pelo técnico no futuro)
-      document.getElementById("user-plano").innerText = localStorage.getItem("user_plano_" + u.id) || "Nenhum";
+      // CONFIGURADO: Plano padrão como "Gratuito"
+      document.getElementById("user-plano").innerText = localStorage.getItem("user_plano_" + u.id) || "Gratuito";
 
       if (!localStorage.getItem("entrada")) {
         localStorage.setItem("entrada", new Date().toLocaleDateString("pt-BR"));
@@ -528,22 +528,15 @@ function checkBlacklist() {
   }
 }
 
-function bloquearAcessoTotal() { 
-  document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>ACESSO BLOQUEADO</h1>"; 
-}
+function bloquearAcessoTotal() { document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>BANIDO</h1>"; }
 
 function toggleBlacklist() {
   const val = document.getElementById("blacklist-input").value.trim();
   if (!val) return alert("Insira um ID.");
-
-  if (blacklisted.includes(val)) {
-    blacklisted = blacklisted.filter(i => i !== val);
-    alert("ID " + val + " removido da blacklist!");
-  } else {
-    blacklisted.push(val);
-    alert("ID " + val + " bloqueado com sucesso!");
-  }
+  if (blacklisted.includes(val)) blacklisted = blacklisted.filter(i => i !== val);
+  else blacklisted.push(val);
   localStorage.setItem('firepg_blacklist', JSON.stringify(blacklisted));
+  alert("Lista atualizada.");
   document.getElementById("blacklist-input").value = "";
 }
 
