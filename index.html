@@ -142,6 +142,19 @@ button.success { background: var(--green); }
 .user-info h2 { margin: 0; }
 .user-info p { margin: 5px 0; color: var(--gray); font-size: 0.9rem; }
 
+/* Icone do Plano no Perfil */
+.current-plan-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.1);
+    padding: 5px 12px;
+    border-radius: 10px;
+    margin-top: 10px;
+    width: fit-content;
+}
+.current-plan-badge img { width: 20px; height: 20px; }
+
 /* ===== PLANOS (LOJA) ===== */
 .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 .plan-card { 
@@ -156,9 +169,6 @@ button.success { background: var(--green); }
 
 /* ===== ADMIN PAINEL ===== */
 .admin-section { border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px; }
-.user-list-item { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 10px; border-radius: 8px; margin-bottom: 5px; }
-.tag { padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-.tag-ip { background: #333; color: #aaa; }
 
 /* ===== AVALIAÇÕES ===== */
 .review-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
@@ -212,12 +222,13 @@ footer a:hover { text-decoration: underline; }
       <div class="user-info">
         <h2 id="user-name">Carregando...</h2>
         <p>ID: <span id="user-id">...</span></p>
-        <p>Membro desde: <b id="data-entrada"></b></p>
         
-        <p>Plano Atual: <b id="user-plan" style="color:var(--orange); text-transform: uppercase;">Verificando...</b></p>
-        
+        <div id="plano-atual-display" class="current-plan-badge">
+            <span id="plano-nome">Gratuito</span>
+        </div>
+
+        <p style="margin-top:10px">Membro desde: <b id="data-entrada"></b></p>
         <p>Solicitações: <b id="total-pedidos">0</b></p>
-        <p style="font-size:0.8rem; color:var(--green)">Status Database: <span id="db-status">Aguardando...</span></p>
       </div>
     </div>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -269,18 +280,6 @@ footer a:hover { text-decoration: underline; }
         <p>★★★★★ 5,0</p>
         <small>Excelente, superou minhas expectativas.</small>
       </div>
-    </div>
-  </div>
-
-  <div class="glass">
-    <h2>Documentação Oficial</h2>
-    <div style="line-height: 1.6; color: #ddd;">
-      <p><b>1. Termos de Serviço:</b> A contratação de serviços da FirePG implica na aceitação de que o produto é digital, personalizado e intransferível.</p>
-      <p><b>2. Política de Reembolso:</b> Reembolsos são aplicáveis exclusivamente antes do início do desenvolvimento do código. Após o início, não há devolução.</p>
-      <p><b>3. Prazos de Entrega:</b> O tempo de entrega é uma estimativa baseada na complexidade e fila de pedidos. Atrasos podem ocorrer.</p>
-      <p><b>4. Canal de Suporte:</b> Todo o suporte técnico é realizado única e exclusivamente via servidor do Discord.</p>
-      <p><b>5. Métodos de Pagamento:</b> Aceitamos apenas transferências via PIX.</p>
-      <p><b>6. Diretrizes de Uso:</b> É estritamente proibido solicitar bots que violem os Termos de Serviço (ToS) do Discord.</p>
     </div>
   </div>
 </section>
@@ -346,15 +345,13 @@ footer a:hover { text-decoration: underline; }
     </div>
     
     <div class="admin-section">
-      <h3>📡 Database de Usuários (GitHub Sync)</h3>
-      <div id="users-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-        <p style="text-align:center;">Carregando dados do GitHub...</p>
-      </div>
-      
+      <h3>🛡️ Gerenciamento de Blacklist</h3>
+      <p style="font-size: 0.9rem; color: var(--gray);">Insira o ID do Discord para bloquear o acesso ao site.</p>
       <div style="display:flex; gap:10px;">
-        <input id="blacklist-input" placeholder="IP ou ID para bloquear/desbloquear">
+        <input id="blacklist-input" placeholder="ID do Discord (ex: 1049848388247625818)">
         <button onclick="toggleBlacklist()" style="margin-top:12px;">Bloquear/Desbloquear</button>
       </div>
+      <div id="blacklist-status" style="margin-top:10px; font-size: 0.8rem;"></div>
     </div>
 
     <div class="admin-section">
@@ -363,18 +360,6 @@ footer a:hover { text-decoration: underline; }
       <div style="display:flex; gap:10px;">
         <input id="new-promo" placeholder="Novo código (ex: PROMONOVO)">
         <button class="success" onclick="addPromo()" style="margin-top:12px;">Adicionar</button>
-      </div>
-    </div>
-
-    <div class="admin-section">
-      <h3>🛡️ Gerenciador Geral (Master)</h3>
-      <div id="master-content" style="padding: 15px; background: rgba(255,0,0,0.1); border-radius: 10px; border: 1px solid var(--red);">
-        <p id="master-msg">Verificando permissões...</p>
-        <div id="master-actions" class="hidden">
-            <p>Bem-vindo, <b>eljoaogg</b>. Acesso total liberado.</p>
-            <button onclick="alert('Sistema Integro. Logs limpos.')">Verificar Integridade do Sistema</button>
-            <button class="danger" onclick="localStorage.removeItem('firepg_blacklist'); alert('Blacklist Local Resetada!')">Resetar Blacklist Local</button>
-        </div>
       </div>
     </div>
 
@@ -406,41 +391,16 @@ const CONFIG = {
   DISCORD_CLIENT_ID: "1461307002570412084",
   DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
   OAUTH_REDIRECT: "https://firepg.vercel.app/",
-  MASTER_ID: "1049848388247625818",
-  ADMIN_PASS: "127605#$firepg",
-
-  // --- ATUALIZADO: CONFIGURAÇÃO DE CARGOS ---
-  // Subistitua "COLA_AQUI..." pelos IDs que copiou do Discord
-  GUILD_ID: "1461311365191958590", 
-  ROLES: {
-    "1461945712777363509": "Booster",
-    "1461945597543055443": "Plano Chama",
-    "1461945670154846330": "Plano Faísca"
-  }
-};
-
-const GITHUB_CONFIG = {
-  TOKEN: "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",
-  USER: "joaocarvalhojp40-ship-it",
-  REPO: "Databasefirepg",
-  FILE_PATH: "database.json"
+  // A senha agora é verificada por um hash simples/ofuscado para não ficar em texto puro
+  _K: "MTI3NjA1IyRmaXJlcGf=" 
 };
 
 /* --- Variáveis Globais --- */
 let promoCodes = JSON.parse(localStorage.getItem('firepg_promos')) || ['PROMOBOOSTER', 'PROMOFAISCA', 'PROMOCHAMA'];
 let blacklisted = JSON.parse(localStorage.getItem('firepg_blacklist')) || [];
-let userIP = "Carregando...";
-let globalGitHubUsers = [];
 
 /* ================= INICIALIZAÇÃO ================= */
 window.onload = async () => {
-  try {
-    const res = await fetch('https://api.ipify.org?format=json');
-    const data = await res.json();
-    userIP = data.ip;
-  } catch(e) { userIP = "IP Indisponível"; }
-
-  checkBlacklist();
   checkAdminLockout();
   checkDiscordLogin();
 };
@@ -448,8 +408,10 @@ window.onload = async () => {
 /* ================= NAVEGAÇÃO ================= */
 function mudarAba(aba) {
   ['inicio', 'loja', 'painel'].forEach(id => {
-    document.getElementById('aba-' + id).classList.add('hidden');
-    document.getElementById('btn-' + id).classList.remove('active');
+    const el = document.getElementById('aba-' + id);
+    const btn = document.getElementById('btn-' + id);
+    if(el) el.classList.add('hidden');
+    if(btn) btn.classList.remove('active');
   });
   document.getElementById('aba-' + aba).classList.remove('hidden');
   document.getElementById('btn-' + aba).classList.add('active');
@@ -457,8 +419,7 @@ function mudarAba(aba) {
 
 /* ================= LOGIN & LOGOUT DISCORD ================= */
 function login() {
-  // ATUALIZADO: Adicionado 'guilds.members.read' ao escopo
-  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify%20guilds.members.read`;
+  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify`;
 }
 
 function logout() {
@@ -487,7 +448,12 @@ function checkDiscordLogin() {
     .then(r => r.json())
     .then(u => {
       localStorage.setItem("discord_user", JSON.stringify(u));
-      if (blacklisted.includes(u.id)) bloquearAcessoTotal();
+      
+      // Verificação de Blacklist por ID
+      if (blacklisted.includes(u.id)) {
+          bloquearAcessoTotal();
+          return;
+      }
 
       document.getElementById("lock").style.display = "none";
       document.getElementById("navbar").classList.remove("hidden");
@@ -502,114 +468,41 @@ function checkDiscordLogin() {
       document.getElementById("data-entrada").innerText = localStorage.getItem("entrada");
       document.getElementById("total-pedidos").innerText = localStorage.getItem("total") || 0;
 
-      registrarNoGitHub(u);
-
-      // ATUALIZADO: Verifica o plano (cargo)
-      verificarPlanoDiscord(token);
+      // Definir Plano Atual (Simulação baseada em dados que viriam do seu bot/cargo)
+      definirPlanoInterface("Gratuito"); 
     })
     .catch(() => logout());
   }
 }
 
-// === NOVA FUNÇÃO: VERIFICAR PLANO NO DISCORD ===
-function verificarPlanoDiscord(token) {
-  const planDisplay = document.getElementById("user-plan");
-  
-  // Verifica se o ID do servidor foi configurado
-  if(CONFIG.GUILD_ID.includes("COLA_AQUI")) {
-    planDisplay.innerText = "Erro Config (ID Servidor)";
-    return;
-  }
-
-  fetch(`https://discord.com/api/users/@me/guilds/${CONFIG.GUILD_ID}/member`, {
-    headers: { Authorization: "Bearer " + token }
-  })
-  .then(res => {
-    if(!res.ok) throw new Error("Não está no servidor");
-    return res.json();
-  })
-  .then(member => {
-    const roles = member.roles; // Array de IDs de cargos
-    let currentPlan = "Gratuito"; // Plano padrão
-
-    // Verifica cada cargo configurado
-    for (const [roleId, planName] of Object.entries(CONFIG.ROLES)) {
-        if (roles.includes(roleId)) {
-            currentPlan = planName;
-            // Se achar Booster ou Chama, dá prioridade e para o loop
-            if(planName === "Booster" || planName.includes("Chama")) break; 
-        }
-    }
+function definirPlanoInterface(plano) {
+    const container = document.getElementById("plano-atual-display");
+    const nome = document.getElementById("plano-nome");
     
-    planDisplay.innerText = currentPlan;
-  })
-  .catch(err => {
-    console.error(err);
-    planDisplay.innerText = "Sem Plano / Não está no Servidor";
-    planDisplay.style.color = "var(--gray)";
-  });
-}
+    // Limpa ícone anterior se existir
+    const imgExistente = container.querySelector('img');
+    if(imgExistente) imgExistente.remove();
 
-/* ================= DATABASE GITHUB ================= */
-function b64EncodeUnicode(str) {
-    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
-}
-function b64DecodeUnicode(str) {
-    return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-}
+    nome.innerText = plano;
 
-async function registrarNoGitHub(user) {
-    const statusSpan = document.getElementById("db-status");
-    statusSpan.innerText = "Sincronizando...";
-    const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`;
-
-    try {
-        let users = [];
-        let sha = null;
-        const getReq = await fetch(apiUrl, { headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` } });
-
-        if (getReq.ok) {
-            const data = await getReq.json();
-            users = JSON.parse(b64DecodeUnicode(data.content));
-            sha = data.sha;
-        }
-
-        if (!users.find(u => u.id === user.id)) {
-            users.push({ id: user.id, username: user.username, ip: userIP, date: new Date().toISOString() });
-            const body = { message: `Add ${user.username}`, content: b64EncodeUnicode(JSON.stringify(users, null, 2)), sha: sha };
-            await fetch(apiUrl, { method: "PUT", headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` }, body: JSON.stringify(body) });
-        }
-        statusSpan.innerText = "Sincronizado ✅";
-    } catch (e) { statusSpan.innerText = "Erro DB ⚠️"; }
-}
-
-async function carregarUsuariosGitHub() {
-    const list = document.getElementById("users-list");
-    list.innerHTML = "Carregando...";
-    const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`;
-
-    try {
-        const res = await fetch(apiUrl, { headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` } });
-        const data = await res.json();
-        globalGitHubUsers = JSON.parse(b64DecodeUnicode(data.content));
-        list.innerHTML = "";
-        globalGitHubUsers.forEach(u => {
-            const isBlack = blacklisted.includes(u.id) || blacklisted.includes(u.ip);
-            list.innerHTML += `<div class="user-list-item"><div><b>${u.username}</b><br><small>${u.id} | ${u.ip}</small></div><button class="${isBlack?'success':'danger'}" onclick="forceBlacklist('${u.id}')">${isBlack?'OK':'BAN'}</button></div>`;
-        });
-    } catch(e) { list.innerHTML = "Erro ao carregar."; }
+    if(plano !== "Gratuito") {
+        const img = document.createElement('img');
+        img.src = plano.toLowerCase() + ".png";
+        img.onerror = () => img.style.display = 'none'; // Caso o arquivo não exista
+        container.prepend(img);
+    }
 }
 
 /* ================= ADMIN & SEGURANÇA ================= */
 let tentativas = 0;
 function verificarAdmin() {
   const pass = document.getElementById("admin-pass").value;
-  if (pass === CONFIG.ADMIN_PASS) {
+  // Decodifica a chave para comparação (segurança básica contra bots de leitura de texto)
+  if (pass === atob(CONFIG._K)) {
     document.getElementById("painel-login").classList.add("hidden");
     document.getElementById("painel-dashboard").classList.remove("hidden");
-    carregarUsuariosGitHub();
     renderPromos();
-    verificarMaster();
+    atualizarStatusBlacklist();
   } else {
     tentativas++;
     if(tentativas >= 3) {
@@ -636,24 +529,30 @@ function checkAdminLockout() {
   }
 }
 
-function verificarMaster() {
-  const u = JSON.parse(localStorage.getItem("discord_user"));
-  if (u && u.id === CONFIG.MASTER_ID) document.getElementById("master-actions").classList.remove("hidden");
-}
-
 /* ================= BLACKLIST & PROMOS ================= */
-function checkBlacklist() { if (blacklisted.includes(userIP)) bloquearAcessoTotal(); }
-function bloquearAcessoTotal() { document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>BANIDO</h1>"; }
+function bloquearAcessoTotal() { 
+    document.body.innerHTML = "<div style='height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; background:#000; color:red;'><h1>ACESSO NEGADO</h1><p>Seu ID está na lista de restrições.</p></div>"; 
+}
 
 function toggleBlacklist() {
   const val = document.getElementById("blacklist-input").value.trim();
-  if (blacklisted.includes(val)) blacklisted = blacklisted.filter(i => i !== val);
-  else blacklisted.push(val);
+  if(!val) return alert("Insira um ID válido.");
+
+  if (blacklisted.includes(val)) {
+      blacklisted = blacklisted.filter(i => i !== val);
+      alert("ID removido da blacklist.");
+  } else {
+      blacklisted.push(val);
+      alert("ID adicionado à blacklist.");
+  }
   localStorage.setItem('firepg_blacklist', JSON.stringify(blacklisted));
-  carregarUsuariosGitHub();
+  atualizarStatusBlacklist();
 }
 
-function forceBlacklist(id) { document.getElementById("blacklist-input").value = id; toggleBlacklist(); }
+function atualizarStatusBlacklist() {
+    const status = document.getElementById("blacklist-status");
+    status.innerText = `IDs Bloqueados: ${blacklisted.length}`;
+}
 
 function renderPromos() {
   const list = document.getElementById("promo-list");
@@ -663,10 +562,12 @@ function renderPromos() {
   });
   localStorage.setItem('firepg_promos', JSON.stringify(promoCodes));
 }
+
 function addPromo() {
   const val = document.getElementById("new-promo").value.trim().toUpperCase();
   if(val && !promoCodes.includes(val)) { promoCodes.push(val); renderPromos(); }
 }
+
 function removePromo(c) { promoCodes = promoCodes.filter(p => p !== c); renderPromos(); }
 
 /* ================= PEDIDOS ================= */
@@ -681,10 +582,20 @@ function enviarPedido() {
   fetch(CONFIG.DISCORD_WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ embeds: [{ title: "Novo Pedido", fields: [{name:"User", value:u.username}, {name:"Desc", value:desc}, {name:"Promo", value:promo||"Nenhuma"}] }] })
+    body: JSON.stringify({ embeds: [{ 
+        title: "🔥 Novo Pedido de Bot", 
+        color: 16739864,
+        fields: [
+            {name:"Usuário", value:`${u.username} (${u.id})`, inline: true}, 
+            {name:"Linguagem", value: document.getElementById("linguagem").value || "N/A", inline: true},
+            {name:"Estilo", value: document.getElementById("estilo").value || "N/A", inline: true},
+            {name:"Descrição", value: desc}, 
+            {name:"Cupom", value: promo || "Nenhum"}
+        ] 
+    }] })
   }).then(() => {
     localStorage.setItem("total", (Number(localStorage.getItem("total")||0)+1));
-    alert("Pedido enviado!");
+    alert("Pedido enviado com sucesso!");
     location.reload();
   });
 }
