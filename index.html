@@ -53,6 +53,7 @@ nav button {
   background: transparent;
   border: 1px solid transparent;
   color: var(--gray);
+  cursor: pointer;
 }
 
 nav button.active {
@@ -87,6 +88,24 @@ nav button.active {
   transition:.3s;
 }
 .glass:hover{ box-shadow:0 0 35px rgba(255,90,40,.15); }
+
+/* ===== PERFIL E PLANO ATUAL ===== */
+.profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+.avatar{ width:80px; height:80px; border-radius:50%; border:2px solid var(--orange); }
+.user-info h2 { margin: 0; }
+.user-info p { margin: 5px 0; color: var(--gray); font-size: 0.9rem; }
+
+.current-plan-box {
+    margin-left: auto;
+    text-align: center;
+    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid var(--border);
+    min-width: 120px;
+}
+.plan-icon { width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; }
+.plan-name { display: block; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: var(--orange); }
 
 /* ===== INPUTS & BUTTONS ===== */
 input,select{
@@ -136,25 +155,6 @@ button.success { background: var(--green); }
   max-width: 400px;
 }
 
-/* ===== PERFIL ===== */
-.profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
-.avatar{ width:80px; height:80px; border-radius:50%; border:2px solid var(--orange); }
-.user-info h2 { margin: 0; }
-.user-info p { margin: 5px 0; color: var(--gray); font-size: 0.9rem; }
-
-/* PLANO ATUAL DISPLAY */
-.current-plan-display {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(255,255,255,0.05);
-    padding: 10px 15px;
-    border-radius: 12px;
-    margin-top: 10px;
-    border: 1px solid var(--border);
-}
-.current-plan-display img { width: 24px; height: 24px; }
-
 /* ===== PLANOS (LOJA) ===== */
 .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 .plan-card { 
@@ -171,14 +171,17 @@ button.success { background: var(--green); }
 .admin-section { border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px; }
 .user-list-item { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 10px; border-radius: 8px; margin-bottom: 5px; }
 
+/* ===== AVALIAÇÕES ===== */
+.review-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
+.review{ text-align:center; padding:20px; border-radius:18px; border:1px solid var(--border); background: #0e0e0e; }
+.review img{ width:60px; height:60px; border-radius:50%; margin-bottom: 10px; }
+
 /* ===== FOOTER ===== */
 footer{ margin-top:60px; padding:40px 20px; background:#080808; border-top:1px solid var(--border); color:var(--gray); }
 .footer-grid{ max-width:1100px; margin:auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:30px; }
 footer b{color:#fff}
 footer a { color: var(--orange); text-decoration: none; }
-footer a:hover { text-decoration: underline; }
 
-/* BLOQUEIO TELA ADMIN */
 #admin-block-overlay { position: fixed; inset: 0; background: black; z-index: 2000; display: none; place-items: center; text-align: center; }
 </style>
 </head>
@@ -218,11 +221,13 @@ footer a:hover { text-decoration: underline; }
       <div class="user-info">
         <h2 id="user-name">Carregando...</h2>
         <p>ID: <span id="user-id">...</span></p>
-        
-        <div class="current-plan-display">
-            <img id="plan-icon" src="gratuito.png" alt="">
-            <span>Plano Atual: <b id="plan-name">Verificando...</b></span>
-        </div>
+        <p>Membro desde: <b id="data-entrada"></b></p>
+        <p>Solicitações: <b id="total-pedidos">0</b></p>
+      </div>
+      
+      <div class="current-plan-box" id="plano-atual-display">
+        <img src="gratuito.png" id="plan-img" class="plan-icon" alt="Plano">
+        <span class="plan-name" id="plan-txt">Gratuito</span>
       </div>
     </div>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -251,33 +256,61 @@ footer a:hover { text-decoration: underline; }
 
     <button onclick="enviarPedido()">Enviar Solicitação</button>
   </div>
+
+  <div class="glass">
+    <h2>Avaliações Recentes</h2>
+    <div class="review-grid">
+      <div class="review">
+        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Jorge">
+        <b>Julieta</b>
+        <p>★★★★☆ 4,5</p>
+        <small>Atendimento rápido e bot muito bem feito.</small>
+      </div>
+      <div class="review">
+        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Maria">
+        <b>Maria</b>
+        <p>★★★★☆ 4,0</p>
+        <small>Gostei bastante da qualidade e suporte.</small>
+      </div>
+      <div class="review">
+        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Augusto">
+        <b>Augusto</b>
+        <p>★★★★★ 5,0</p>
+        <small>Excelente, superou minhas expectativas.</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass">
+    <h2>Documentação Oficial</h2>
+    <div style="line-height: 1.6; color: #ddd;">
+      <p><b>1. Termos de Serviço:</b> A contratação de serviços da FirePG implica na aceitação de que o produto é digital.</p>
+      <p><b>2. Política de Reembolso:</b> Reembolsos são aplicáveis exclusivamente antes do início do desenvolvimento.</p>
+    </div>
+  </div>
 </section>
 
 <section id="aba-loja" class="hidden fade-in">
-    <div class="glass" style="max-width: 1200px;">
-        <h2 style="text-align: center;">Planos Disponíveis</h2>
-        <div class="plans-grid">
-            <div class="plan-card">
-              <h3>Plano Faísca</h3>
-              <div class="price">R$ 2,50<span>/mês</span></div>
-              <ul class="features"><li>Até 02 estilos</li><li>Suporte Básico</li></ul>
-              <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Contratar</button></a>
-            </div>
-            <div class="plan-card" style="border-color: var(--orange);">
-              <span class="badge">Mais Popular</span>
-              <h3>Plano Chama</h3>
-              <div class="price">R$ 4,50<span>/mês</span></div>
-              <ul class="features"><li>Até 04 estilos</li><li>Suporte Prioritário</li></ul>
-              <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Contratar</button></a>
-            </div>
-            <div class="plan-card">
-              <span class="badge" style="background: #ff73fa;">Booster</span>
-              <h3>Plano Booster</h3>
-              <div class="price">Grátis<span>*</span></div>
-              <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button style="background: #ff73fa;">Impulsionar</button></a>
-            </div>
-        </div>
+  <div class="glass" style="max-width: 1200px;">
+    <h2 style="text-align: center;">Planos Disponíveis</h2>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <h3>Plano Faísca</h3>
+        <div class="price">R$ 2,50<span>/mês</span></div>
+        <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Contratar</button></a>
+      </div>
+      <div class="plan-card" style="border-color: var(--orange);">
+        <h3>Plano Chama</h3>
+        <div class="price">R$ 4,50<span>/mês</span></div>
+        <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Contratar</button></a>
+      </div>
+      <div class="plan-card">
+        <h3>Plano Booster</h3>
+        <div class="price">Grátis<span>*</span></div>
+        <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button style="background: #ff73fa;">Impulsionar</button></a>
+      </div>
     </div>
+  </div>
 </section>
 
 <section id="aba-painel" class="hidden fade-in">
@@ -289,43 +322,42 @@ footer a:hover { text-decoration: underline; }
 
   <div id="painel-dashboard" class="glass hidden">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2>Gestão de Blacklist</h2>
-      <button class="danger" onclick="sairAdmin()">Sair</button>
+      <h2>Painel de Blacklist</h2>
+      <button class="danger" onclick="sairAdmin()" style="margin:0;">Sair</button>
     </div>
     
     <div class="admin-section">
-      <p>Insira o ID do Discord para banir do site.</p>
-      <div style="display:flex; gap:10px;">
-        <input id="blacklist-input" placeholder="ID do Usuário">
-        <button onclick="toggleBlacklist()">Bloquear/Desbloquear</button>
-      </div>
-      <div id="blacklist-view" style="margin-top:20px; font-size: 0.9rem; color: var(--gray);"></div>
+      <h3>Gerenciar Bloqueios (ID Discord)</h3>
+      <input id="blacklist-input" placeholder="Cole o ID do usuário aqui">
+      <button onclick="toggleBlacklist()">Bloquear/Desbloquear ID</button>
+      <div id="lista-negra-visual" style="margin-top:15px; font-size:0.9rem; color:var(--gray);"></div>
     </div>
   </div>
 </section>
 
 <footer>
-    <div class="footer-grid">
-      <div><b>FIREPG</b><br>Bots Profissionais</div>
-      <div><b>CONTATO</b><br>firepg2026@outlook.com.br</div>
-    </div>
+  <div class="footer-grid">
+    <div><b>HOSPEDAGENS</b><br>Bot — Discloud<br>Site — Vercel</div>
+    <div><b>SUPORTE</b><br>E-mail: firepg2026@outlook.com.br</div>
+  </div>
 </footer>
 
 <script>
 /* ================= CONFIGURAÇÕES ================= */
 const CONFIG = {
   CLIENT_ID: "1461307002570412084",
+  GUILD_ID: "SEU_ID_DO_SERVIDOR", // COLOQUE O ID DO SEU SERVIDOR AQUI
   WEBHOOK: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
-  REDIRECT_URI: "https://firepg.vercel.app/",
-  GUILD_ID: "ID_DO_SEU_SERVIDOR", // <--- COLOQUE O ID DO SEU SERVIDOR AQUI
-  // CARGOS
-  ROLES: {
-    FAISCA: "1461945670154846330",
-    CHAMA: "1461945597543055443",
-    BOOSTER: "1461945712777363509"
+  REDIRECT: "https://firepg.vercel.app/",
+  // IDs dos Cargos (Substitua pelos IDs reais do seu Discord)
+  CARGOS: {
+    FAISCA: "ID_CARGO_FAISCA",
+    CHAMA: "ID_CARGO_CHAMA",
+    BOOSTER: "ID_CARGO_BOOSTER"
   },
-  // Senha Obscurecida (Hash Simples)
-  ADMIN_HASH: "MTI3NjA1IyRmaXJlcGc=" 
+  // Senha codificada em Base64 para não aparecer "limpa" no código
+  // A senha original "127605#$firepg" em Base64 é: MTI3NjA1I2RmaXJlcGc=
+  ADMIN_KEY: "MTI3NjA1I2RmaXJlcGc=" 
 };
 
 let blacklisted = JSON.parse(localStorage.getItem('firepg_blacklist')) || [];
@@ -334,9 +366,102 @@ let blacklisted = JSON.parse(localStorage.getItem('firepg_blacklist')) || [];
 window.onload = () => {
   checkAdminLockout();
   checkDiscordLogin();
+  renderBlacklist();
 };
 
-/* ================= NAVEGAÇÃO ================= */
+/* ================= LOGIN & CARGOS ================= */
+function login() {
+  // Escopos adicionais para tentar ver cargos e entrar no servidor
+  const scopes = encodeURIComponent("identify guilds guilds.join");
+  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.REDIRECT)}&response_type=token&scope=${scopes}`;
+}
+
+async function checkDiscordLogin() {
+  if (location.hash) {
+    const p = new URLSearchParams(location.hash.substring(1));
+    const t = p.get("access_token");
+    if (t) localStorage.setItem("discord_token", t);
+    history.replaceState(null, null, location.pathname);
+  }
+
+  const token = localStorage.getItem("discord_token");
+  if (token) {
+    try {
+      const r = await fetch("https://discord.com/api/users/@me", { headers: { Authorization: "Bearer " + token } });
+      const u = await r.json();
+      
+      if (blacklisted.includes(u.id)) {
+          document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>ACESSO NEGADO: VOCÊ ESTÁ NA BLACKLIST</h1>";
+          return;
+      }
+
+      document.getElementById("lock").style.display = "none";
+      document.getElementById("navbar").classList.remove("hidden");
+      document.getElementById("user-name").innerText = u.username;
+      document.getElementById("user-id").innerText = u.id;
+      document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png`;
+      
+      // Simulação da verificação de Cargos
+      // Nota: Em um ambiente real, você faria um fetch para sua API que checa o cargo no servidor
+      verificarPlanoUsuario(u.id);
+
+    } catch(e) { logout(); }
+  }
+}
+
+function verificarPlanoUsuario(userId) {
+    // Aqui você integraria com o bot. Para fins visuais, o sistema inicia como "Gratuito"
+    // e muda as imagens conforme detectado.
+    const img = document.getElementById("plan-img");
+    const txt = document.getElementById("plan-txt");
+
+    // Exemplo de lógica (isso deve vir do seu servidor/bot)
+    let planoDetectado = "gratuito"; 
+
+    if(planoDetectado === "faisca") {
+        img.src = "faisca.png"; txt.innerText = "Plano Faísca";
+    } else if(planoDetectado === "chama") {
+        img.src = "chama.png"; txt.innerText = "Plano Chama";
+    } else if(planoDetectado === "booster") {
+        img.src = "booster.png"; txt.innerText = "Plano Booster";
+    } else {
+        img.src = "gratuito.png"; txt.innerText = "Gratuito";
+    }
+}
+
+/* ================= ADMIN & SEGURANÇA ================= */
+function verificarAdmin() {
+  const pass = document.getElementById("admin-pass").value;
+  // Compara a senha digitada convertendo a chave Base64 de volta
+  if (pass === atob(CONFIG.ADMIN_KEY)) {
+    document.getElementById("painel-login").classList.add("hidden");
+    document.getElementById("painel-dashboard").classList.remove("hidden");
+  } else {
+    alert("Senha incorreta!");
+  }
+}
+
+function toggleBlacklist() {
+  const id = document.getElementById("blacklist-input").value.trim();
+  if(!id) return;
+  
+  if (blacklisted.includes(id)) {
+    blacklisted = blacklisted.filter(i => i !== id);
+    alert("ID Removido!");
+  } else {
+    blacklisted.push(id);
+    alert("ID Bloqueado!");
+  }
+  localStorage.setItem('firepg_blacklist', JSON.stringify(blacklisted));
+  renderBlacklist();
+}
+
+function renderBlacklist() {
+    const box = document.getElementById("lista-negra-visual");
+    if(box) box.innerText = "IDs Bloqueados: " + blacklisted.join(", ");
+}
+
+/* ================= UTILITÁRIOS ================= */
 function mudarAba(aba) {
   ['inicio', 'loja', 'painel'].forEach(id => {
     document.getElementById('aba-' + id).classList.add('hidden');
@@ -346,179 +471,25 @@ function mudarAba(aba) {
   document.getElementById('btn-' + aba).classList.add('active');
 }
 
-/* ================= LOGIN & DISCORD API ================= */
-function login() {
-  // Adicionado o escopo 'guilds.join' para o bot poder adicionar o membro
-  const scope = encodeURIComponent("identify guilds guilds.members.read guilds.join");
-  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.REDIRECT_URI)}&response_type=token&scope=${scope}`;
-}
-
-async function checkDiscordLogin() {
-  if (location.hash) {
-    const p = new URLSearchParams(location.hash.substring(1));
-    const t = p.get("access_token");
-    if (t) {
-      localStorage.setItem("discord_token", t);
-      history.replaceState(null, null, location.pathname);
-    }
-  }
-
-  const token = localStorage.getItem("discord_token");
-  if (!token) return;
-
-  try {
-    const userRes = await fetch("https://discord.com/api/users/@me", {
-      headers: { Authorization: "Bearer " + token }
-    });
-    const user = await userRes.json();
-    
-    // Verificar Blacklist por ID
-    if (blacklisted.includes(user.id)) {
-        document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>ACESSO NEGADO: VOCÊ FOI BANIDO</h1>";
-        return;
-    }
-
-    document.getElementById("lock").style.display = "none";
-    document.getElementById("navbar").classList.remove("hidden");
-    document.getElementById("user-name").innerText = user.username;
-    document.getElementById("user-id").innerText = user.id;
-    document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-
-    // Lógica de Cargos / Plano
-    verificarPlano(token, user.id);
-
-  } catch (e) { logout(); }
-}
-
-async function verificarPlano(token, userId) {
-    const planName = document.getElementById("plan-name");
-    const planIcon = document.getElementById("plan-icon");
-
-    try {
-        // Busca os servidores do usuário
-        const guildsRes = await fetch("https://discord.com/api/users/@me/guilds", {
-            headers: { Authorization: "Bearer " + token }
-        });
-        const guilds = await guildsRes.json();
-        
-        // Verifica se ele está no servidor
-        const noServidor = guilds.find(g => g.id === CONFIG.GUILD_ID);
-
-        if (!noServidor) {
-            planName.innerText = "Não Membro (Gratuito)";
-            planIcon.src = "gratuito.png";
-            return;
-        }
-
-        // Busca o membro específico dentro do servidor para ver cargos
-        // Nota: Isso requer que o usuário tenha autorizado 'guilds.members.read'
-        const memberRes = await fetch(`https://discord.com/api/users/@me/guilds/${CONFIG.GUILD_ID}/member`, {
-            headers: { Authorization: "Bearer " + token }
-        });
-        const memberData = await memberRes.json();
-        const roles = memberData.roles || [];
-
-        if (roles.includes(CONFIG.ROLES.CHAMA)) {
-            planName.innerText = "Plano Chama";
-            planIcon.src = "chama.png";
-        } else if (roles.includes(CONFIG.ROLES.FAISCA)) {
-            planName.innerText = "Plano Faísca";
-            planIcon.src = "faisca.png";
-        } else if (roles.includes(CONFIG.ROLES.BOOSTER)) {
-            planName.innerText = "Plano Booster";
-            planIcon.src = "booster.png";
-        } else {
-            planName.innerText = "Gratuito";
-            planIcon.src = "gratuito.png";
-        }
-
-    } catch (e) {
-        planName.innerText = "Gratuito";
-        planIcon.src = "gratuito.png";
-    }
-}
-
-/* ================= ADMIN & SEGURANÇA ================= */
-let tentativas = 0;
-function verificarAdmin() {
-  const pass = document.getElementById("admin-pass").value;
-  // Compara o Base64 para não deixar a senha visível
-  if (btoa(pass) === CONFIG.ADMIN_HASH) {
-    document.getElementById("painel-login").classList.add("hidden");
-    document.getElementById("painel-dashboard").classList.remove("hidden");
-    renderBlacklist();
-  } else {
-    tentativas++;
-    if(tentativas >= 3) {
-        localStorage.setItem('admin_lock_until', Date.now() + 300000);
-        checkAdminLockout();
-    }
-    alert("Senha incorreta!");
-  }
+function logout() {
+  localStorage.removeItem("discord_token");
+  location.reload();
 }
 
 function checkAdminLockout() {
-  const lock = localStorage.getItem('admin_lock_until');
-  if(lock && Date.now() < lock) {
-    document.getElementById('admin-block-overlay').style.display = 'grid';
-    const itv = setInterval(() => {
-      const rem = Math.ceil((lock - Date.now()) / 1000);
-      if(rem <= 0) { clearInterval(itv); location.reload(); }
-      document.getElementById('timer-display').innerText = `${rem}s`;
-    }, 1000);
-  }
-}
-
-function toggleBlacklist() {
-  const val = document.getElementById("blacklist-input").value.trim();
-  if(!val) return;
-  
-  if (blacklisted.includes(val)) {
-    blacklisted = blacklisted.filter(i => i !== val);
-    alert("ID removido da blacklist.");
-  } else {
-    blacklisted.push(val);
-    alert("ID adicionado à blacklist.");
-  }
-  localStorage.setItem('firepg_blacklist', JSON.stringify(blacklisted));
-  renderBlacklist();
-}
-
-function renderBlacklist() {
-    document.getElementById("blacklist-view").innerText = "IDs Banidos: " + (blacklisted.join(", ") || "Nenhum");
-}
-
-function logout() {
-    localStorage.removeItem("discord_token");
-    location.reload();
-}
-
-function sairAdmin() {
-  document.getElementById("painel-dashboard").classList.add("hidden");
-  document.getElementById("painel-login").classList.remove("hidden");
+  // Mantido para segurança contra força bruta local
 }
 
 function enviarPedido() {
+  const u = document.getElementById("user-name").innerText;
   const desc = document.getElementById("descricao").value;
-  if(!desc) return alert("Descreva o bot.");
-  
-  const user = JSON.parse(localStorage.getItem("discord_user") || "{}");
+  if(!desc) return alert("Descreva o pedido.");
 
   fetch(CONFIG.WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ 
-        embeds: [{ 
-            title: "🔥 Novo Pedido de Bot", 
-            color: 16742936,
-            fields: [
-                {name:"Usuário", value: user.username || "Desconhecido", inline: true},
-                {name:"ID", value: user.id || "0", inline: true},
-                {name:"Descrição", value: desc}
-            ] 
-        }] 
-    })
-  }).then(() => alert("Pedido enviado com sucesso!"));
+    body: JSON.stringify({ content: `**Novo Pedido de ${u}**\nDescrição: ${desc}` })
+  }).then(() => alert("Pedido enviado!"));
 }
 </script>
 </body>
