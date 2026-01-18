@@ -142,18 +142,19 @@ button.success { background: var(--green); }
 .user-info h2 { margin: 0; }
 .user-info p { margin: 5px 0; color: var(--gray); font-size: 0.9rem; }
 
-/* Icone do Plano no Perfil */
-.current-plan-badge {
+/* Estilo do Ícone do Plano */
+.plano-badge {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
     padding: 5px 12px;
     border-radius: 10px;
-    margin-top: 10px;
+    margin-top: 5px;
     width: fit-content;
+    border: 1px solid var(--border);
 }
-.current-plan-badge img { width: 20px; height: 20px; }
+.plano-badge img { width: 18px; height: 18px; }
 
 /* ===== PLANOS (LOJA) ===== */
 .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
@@ -223,11 +224,11 @@ footer a:hover { text-decoration: underline; }
         <h2 id="user-name">Carregando...</h2>
         <p>ID: <span id="user-id">...</span></p>
         
-        <div id="plano-atual-display" class="current-plan-badge">
-            <span id="plano-nome">Gratuito</span>
+        <div id="display-plano" class="plano-badge">
+            <span id="txt-plano">Gratuito</span>
         </div>
 
-        <p style="margin-top:10px">Membro desde: <b id="data-entrada"></b></p>
+        <p>Membro desde: <b id="data-entrada"></b></p>
         <p>Solicitações: <b id="total-pedidos">0</b></p>
       </div>
     </div>
@@ -346,12 +347,12 @@ footer a:hover { text-decoration: underline; }
     
     <div class="admin-section">
       <h3>🛡️ Gerenciamento de Blacklist</h3>
-      <p style="font-size: 0.9rem; color: var(--gray);">Insira o ID do Discord para bloquear o acesso ao site.</p>
+      <p style="color:var(--gray); font-size:0.9rem">O ID inserido abaixo será bloqueado de acessar o site.</p>
       <div style="display:flex; gap:10px;">
-        <input id="blacklist-input" placeholder="ID do Discord (ex: 1049848388247625818)">
+        <input id="blacklist-input" placeholder="ID do Discord para bloquear">
         <button onclick="toggleBlacklist()" style="margin-top:12px;">Bloquear/Desbloquear</button>
       </div>
-      <div id="blacklist-status" style="margin-top:10px; font-size: 0.8rem;"></div>
+      <p id="blacklist-count" style="font-size:0.8rem; margin-top:10px;"></p>
     </div>
 
     <div class="admin-section">
@@ -391,7 +392,7 @@ const CONFIG = {
   DISCORD_CLIENT_ID: "1461307002570412084",
   DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
   OAUTH_REDIRECT: "https://firepg.vercel.app/",
-  // A senha agora é verificada por um hash simples/ofuscado para não ficar em texto puro
+  // Senha codificada para não aparecer no código (Base64)
   _K: "MTI3NjA1IyRmaXJlcGf=" 
 };
 
@@ -408,10 +409,8 @@ window.onload = async () => {
 /* ================= NAVEGAÇÃO ================= */
 function mudarAba(aba) {
   ['inicio', 'loja', 'painel'].forEach(id => {
-    const el = document.getElementById('aba-' + id);
-    const btn = document.getElementById('btn-' + id);
-    if(el) el.classList.add('hidden');
-    if(btn) btn.classList.remove('active');
+    document.getElementById('aba-' + id).classList.add('hidden');
+    document.getElementById('btn-' + id).classList.remove('active');
   });
   document.getElementById('aba-' + aba).classList.remove('hidden');
   document.getElementById('btn-' + aba).classList.add('active');
@@ -419,7 +418,8 @@ function mudarAba(aba) {
 
 /* ================= LOGIN & LOGOUT DISCORD ================= */
 function login() {
-  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify`;
+  // Escopo atualizado para ver cargos/guildas
+  location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify+guilds+guilds.members.read`;
 }
 
 function logout() {
@@ -468,28 +468,28 @@ function checkDiscordLogin() {
       document.getElementById("data-entrada").innerText = localStorage.getItem("entrada");
       document.getElementById("total-pedidos").innerText = localStorage.getItem("total") || 0;
 
-      // Definir Plano Atual (Simulação baseada em dados que viriam do seu bot/cargo)
-      definirPlanoInterface("Gratuito"); 
+      // Simulação de detecção de plano (O bot deve enviar o cargo)
+      // Por padrão, se não houver lógica externa, fica Gratuito.
+      atualizarIconePlano("Gratuito");
     })
     .catch(() => logout());
   }
 }
 
-function definirPlanoInterface(plano) {
-    const container = document.getElementById("plano-atual-display");
-    const nome = document.getElementById("plano-nome");
+function atualizarIconePlano(plano) {
+    const display = document.getElementById("display-plano");
+    const texto = document.getElementById("txt-plano");
     
-    // Limpa ícone anterior se existir
-    const imgExistente = container.querySelector('img');
-    if(imgExistente) imgExistente.remove();
+    // Limpa ícone anterior
+    const imgVelha = display.querySelector('img');
+    if(imgVelha) imgVelha.remove();
 
-    nome.innerText = plano;
+    texto.innerText = plano;
 
     if(plano !== "Gratuito") {
         const img = document.createElement('img');
-        img.src = plano.toLowerCase() + ".png";
-        img.onerror = () => img.style.display = 'none'; // Caso o arquivo não exista
-        container.prepend(img);
+        img.src = plano.toLowerCase() + ".png"; 
+        display.prepend(img);
     }
 }
 
@@ -497,12 +497,12 @@ function definirPlanoInterface(plano) {
 let tentativas = 0;
 function verificarAdmin() {
   const pass = document.getElementById("admin-pass").value;
-  // Decodifica a chave para comparação (segurança básica contra bots de leitura de texto)
+  // Compara com a chave decodificada
   if (pass === atob(CONFIG._K)) {
     document.getElementById("painel-login").classList.add("hidden");
     document.getElementById("painel-dashboard").classList.remove("hidden");
     renderPromos();
-    atualizarStatusBlacklist();
+    document.getElementById("blacklist-count").innerText = `Total na Blacklist: ${blacklisted.length}`;
   } else {
     tentativas++;
     if(tentativas >= 3) {
@@ -531,12 +531,12 @@ function checkAdminLockout() {
 
 /* ================= BLACKLIST & PROMOS ================= */
 function bloquearAcessoTotal() { 
-    document.body.innerHTML = "<div style='height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; background:#000; color:red;'><h1>ACESSO NEGADO</h1><p>Seu ID está na lista de restrições.</p></div>"; 
+    document.body.innerHTML = "<div style='height:100vh; display:flex; align-items:center; justify-content:center; background:#000; color:red; flex-direction:column;'><h1>ACESSO NEGADO</h1><p>Seu ID do Discord está banido deste site.</p></div>"; 
 }
 
 function toggleBlacklist() {
   const val = document.getElementById("blacklist-input").value.trim();
-  if(!val) return alert("Insira um ID válido.");
+  if(!val) return;
 
   if (blacklisted.includes(val)) {
       blacklisted = blacklisted.filter(i => i !== val);
@@ -546,12 +546,7 @@ function toggleBlacklist() {
       alert("ID adicionado à blacklist.");
   }
   localStorage.setItem('firepg_blacklist', JSON.stringify(blacklisted));
-  atualizarStatusBlacklist();
-}
-
-function atualizarStatusBlacklist() {
-    const status = document.getElementById("blacklist-status");
-    status.innerText = `IDs Bloqueados: ${blacklisted.length}`;
+  document.getElementById("blacklist-count").innerText = `Total na Blacklist: ${blacklisted.length}`;
 }
 
 function renderPromos() {
@@ -583,19 +578,17 @@ function enviarPedido() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ embeds: [{ 
-        title: "🔥 Novo Pedido de Bot", 
-        color: 16739864,
+        title: "🔥 Novo Pedido", 
+        color: 16742936,
         fields: [
-            {name:"Usuário", value:`${u.username} (${u.id})`, inline: true}, 
-            {name:"Linguagem", value: document.getElementById("linguagem").value || "N/A", inline: true},
-            {name:"Estilo", value: document.getElementById("estilo").value || "N/A", inline: true},
-            {name:"Descrição", value: desc}, 
-            {name:"Cupom", value: promo || "Nenhum"}
+            {name:"Usuário", value: `${u.username} (${u.id})`}, 
+            {name:"Descrição", value:desc}, 
+            {name:"Cupom", value:promo||"Nenhum"}
         ] 
     }] })
   }).then(() => {
     localStorage.setItem("total", (Number(localStorage.getItem("total")||0)+1));
-    alert("Pedido enviado com sucesso!");
+    alert("Pedido enviado!");
     location.reload();
   });
 }
