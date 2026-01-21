@@ -120,7 +120,6 @@ button{
 }
 button:active { transform: scale(0.98); }
 button.danger { background: var(--error); }
-button.success { background: var(--green); }
 
 /* ===== LOCK SCREEN ===== */
 #lock{
@@ -148,7 +147,7 @@ button.success { background: var(--green); }
 .user-info h2 { margin: 0; }
 .user-info p { margin: 5px 0; color: var(--gray); font-size: 0.9rem; }
 
-/* ===== ESTILOS SELEÇÃO (NOVO) ===== */
+/* ===== ESTILOS SELEÇÃO ===== */
 .estilos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -179,12 +178,6 @@ button.success { background: var(--green); }
 .features li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .badge { background: var(--orange); color: #fff; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; position: absolute; top: 15px; right: 15px; }
 
-/* ===== ADMIN PAINEL ===== */
-.admin-section { border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px; }
-.user-list-item { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 10px; border-radius: 8px; margin-bottom: 5px; }
-.tag { padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-.tag-ip { background: #333; color: #aaa; }
-
 /* ===== AVALIAÇÕES ===== */
 .review-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
 .review{ text-align:center; padding:20px; border-radius:18px; border:1px solid var(--border); background: #0e0e0e; }
@@ -196,9 +189,6 @@ footer{ margin-top:60px; padding:40px 20px; background:#080808; border-top:1px s
 footer b{color:#fff}
 footer a { color: var(--orange); text-decoration: none; }
 footer a:hover { text-decoration: underline; }
-
-/* ===== BLOQUEIO TELA ADMIN ===== */
-#admin-block-overlay { position: fixed; inset: 0; background: black; z-index: 2000; display: none; place-items: center; text-align: center; }
 </style>
 </head>
 
@@ -212,18 +202,9 @@ footer a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div id="admin-block-overlay">
-  <div>
-    <h1 style="color:var(--red)">ACESSO BLOQUEADO</h1>
-    <p>Muitas tentativas incorretas. Aguarde 5 minutos.</p>
-    <p id="timer-display"></p>
-  </div>
-</div>
-
 <nav id="navbar" class="hidden">
   <button onclick="mudarAba('inicio')" id="btn-inicio" class="active">Início</button>
   <button onclick="mudarAba('loja')" id="btn-loja">Loja</button>
-  <button onclick="mudarAba('painel')" id="btn-painel">Painel do Técnico</button>
 </nav>
 
 <div class="logo">FirePG</div>
@@ -264,11 +245,6 @@ footer a:hover { text-decoration: underline; }
       <label class="estilo-item"><input type="checkbox" name="estilo" value="Comunidade"> Comunidade</label>
       <label class="estilo-item"><input type="checkbox" name="estilo" value="Logs/Segurança"> Logs/Segurança</label>
       <label class="estilo-item"><input type="checkbox" name="estilo" value="Entretenimento"> Entretenimento</label>
-    </div>
-
-    <div style="margin-top:12px;">
-      <label style="font-size:0.9rem; color:var(--gray)">Possui código promocional?</label>
-      <input id="promo-code" placeholder="Insira o código (Opcional)">
     </div>
 
     <small style="display:block; margin-top:10px; color:var(--gray)">Seu plano permite selecionar até <b id="limit-label">1</b> estilos.</small>
@@ -336,18 +312,6 @@ footer a:hover { text-decoration: underline; }
   </div>
 </section>
 
-<section id="aba-painel" class="hidden fade-in">
-  <div id="painel-login" class="glass" style="text-align: center; max-width: 500px;">
-    <h2>Acesso Técnico</h2>
-    <input type="password" id="admin-pass" placeholder="Senha de acesso">
-    <button onclick="verificarAdmin()">Acessar Painel</button>
-  </div>
-  <div id="painel-dashboard" class="glass hidden">
-      <div style="display:flex; justify-content:space-between;"><h2>Painel Admin</h2><button class="danger" onclick="sairAdmin()">Sair</button></div>
-      <div id="users-list"></div>
-  </div>
-</section>
-
 <footer>
   <div class="footer-grid">
     <div>
@@ -374,8 +338,6 @@ const CONFIG = {
   DISCORD_CLIENT_ID: "1461307002570412084",
   DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
   OAUTH_REDIRECT: "https://firepg.vercel.app/",
-  MASTER_ID: "1049848388247625818",
-  ADMIN_HASH: "7f7f6a70e7e00a98218427f7173b98455850937a48d8a7c564347719602334f6",
   GUILD_ID: "1461311365191958590", 
   ROLES: {
     "1461945712777363509": { name: "Booster", limit: 2 },
@@ -384,18 +346,9 @@ const CONFIG = {
   }
 };
 
-// TOKEN REMOVIDO POR SEGURANÇA
-const GITHUB_CONFIG = {
-  TOKEN: "INSIRA_SEU_TOKEN_AQUI", 
-  USER: "joaocarvalhojp40-ship-it",
-  REPO: "Databasefirepg",
-  FILE_PATH: "database.json"
-};
-
 let userIP = "0.0.0.0";
-let userStyleLimit = 1; // Padrão Gratuito
+let userStyleLimit = 1; 
 let blacklisted = JSON.parse(localStorage.getItem('firepg_blacklist')) || [];
-let promoCodes = JSON.parse(localStorage.getItem('firepg_promos')) || ['PROMOBOOSTER', 'PROMOFAISCA', 'PROMOCHAMA'];
 
 /* ================= INICIALIZAÇÃO ================= */
 window.onload = async () => {
@@ -405,7 +358,7 @@ window.onload = async () => {
     userIP = data.ip;
   } catch(e) { userIP = "IP Indisponível"; }
 
-  checkBlacklist();
+  if (blacklisted.includes(userIP)) document.body.innerHTML = "BANIDO";
   checkDiscordLogin();
 };
 
@@ -491,29 +444,24 @@ function verificarPlanoDiscord(token) {
   });
 }
 
-/* ================= PEDIDOS (WEBHOOK ATUALIZADO) ================= */
+/* ================= PEDIDOS ================= */
 function enviarPedido() {
   const u = JSON.parse(localStorage.getItem("discord_user"));
   const desc = document.getElementById("descricao").value;
   const lang = document.getElementById("linguagem").value;
-  const promo = document.getElementById("promo-code").value.trim().toUpperCase();
   
-  // Coleta estilos marcados
   const checkboxes = document.querySelectorAll('input[name="estilo"]:checked');
   const estilosSelecionados = Array.from(checkboxes).map(cb => cb.value);
 
-  // Validações
   if(!desc) return alert("Por favor, descreva o bot.");
   if(estilosSelecionados.length === 0) return alert("Selecione pelo menos um estilo.");
   if(estilosSelecionados.length > userStyleLimit) {
     return alert(`Seu plano atual permite apenas ${userStyleLimit} estilos. Você selecionou ${estilosSelecionados.length}.`);
   }
-  if(promo && !promoCodes.includes(promo)) return alert("Cupom inválido.");
 
-  // Montagem do Webhook Profissional
   const embed = {
     title: "🔥 Novo Pedido de Bot - FirePG",
-    color: 16742936, // Cor Laranja (#ff7a18) em Decimal
+    color: 16742936, 
     thumbnail: { url: `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png` },
     fields: [
       { name: "👤 Cliente", value: `**${u.username}**\n(ID: ${u.id})`, inline: true },
@@ -521,8 +469,7 @@ function enviarPedido() {
       { name: "💎 Plano", value: document.getElementById("user-plan").innerText, inline: true },
       { name: "📝 Descrição", value: desc },
       { name: "💻 Linguagem", value: lang || "Não informada", inline: true },
-      { name: "🎨 Estilos Escolhidos", value: estilosSelecionados.join(", "), inline: true },
-      { name: "🎟️ Cupom", value: promo || "Nenhum", inline: true }
+      { name: "🎨 Estilos Escolhidos", value: estilosSelecionados.join(", "), inline: true }
     ],
     footer: { text: "FirePG Sistema de Pedidos • " + new Date().toLocaleString() },
   };
@@ -537,21 +484,20 @@ function enviarPedido() {
     })
   }).then(() => {
     localStorage.setItem("total", (Number(localStorage.getItem("total")||0)+1));
-    alert("Pedido enviado com sucesso para o técnico!");
+    alert("Pedido enviado com sucesso!");
     location.reload();
   }).catch(() => alert("Erro ao enviar pedido."));
 }
 
-/* Funções de Navegação e Admin preservadas */
 function mudarAba(aba) {
-  ['inicio', 'loja', 'painel'].forEach(id => {
+  ['inicio', 'loja'].forEach(id => {
     document.getElementById('aba-' + id).classList.add('hidden');
-    document.getElementById('btn-' + id).classList.remove('active');
+    const btn = document.getElementById('btn-' + id);
+    if(btn) btn.classList.remove('active');
   });
   document.getElementById('aba-' + aba).classList.remove('hidden');
   document.getElementById('btn-' + aba).classList.add('active');
 }
-function checkBlacklist() { if (blacklisted.includes(userIP)) document.body.innerHTML = "BANIDO"; }
 </script>
 </body>
 </html>
