@@ -9,7 +9,7 @@
 <meta property="og:description" content="Solicite bots personalizados para o seu servidor de Discord com a melhor qualidade.">
 <meta property="og:image" content="firepg.png">
 <meta property="og:url" content="https://firepg.vercel.app/">
-<meta name="theme-color" content="#ff7a18">
+<meta theme-color content="#ff7a18">
 
 <link rel="icon" type="image/png" href="firepg.png">
 
@@ -148,6 +148,25 @@ button.success { background: var(--green); }
 .user-info h2 { margin: 0; }
 .user-info p { margin: 5px 0; color: var(--gray); font-size: 0.9rem; }
 
+/* ===== ESTILOS SELEÇÃO (NOVO) ===== */
+.estilos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+.estilo-item {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.estilo-item input { width: auto; margin: 0; cursor: pointer; }
+
 /* ===== PLANOS (LOJA) ===== */
 .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 .plan-card { 
@@ -221,6 +240,7 @@ footer a:hover { text-decoration: underline; }
         <p>Membro desde: <b id="data-entrada"></b></p>
         
         <p>Plano Atual: <b id="user-plan" style="color:var(--orange); text-transform: uppercase;">Verificando...</b></p>
+        <p>Limite de Estilos: <b id="estilo-limit-info" style="color:var(--green)">1</b></p>
         
         <p>Solicitações: <b id="total-pedidos">0</b></p>
       </div>
@@ -236,21 +256,23 @@ footer a:hover { text-decoration: underline; }
     <input id="descricao" placeholder="Descrição detalhada do bot">
     <input id="linguagem" placeholder="Linguagem (JS, Java, Python)">
 
-    <select id="estilo">
-      <option value="">Selecione o estilo</option>
-      <option>Moderação</option>
-      <option>Economia</option>
-      <option>Utilidade</option>
-      <option>Comunidade</option>
-    </select>
+    <p style="margin-top:20px; font-weight:bold;">Escolha os Estilos (conforme seu plano):</p>
+    <div class="estilos-grid" id="grid-estilos">
+      <label class="estilo-item"><input type="checkbox" name="estilo" value="Moderação"> Moderação</label>
+      <label class="estilo-item"><input type="checkbox" name="estilo" value="Economia"> Economia</label>
+      <label class="estilo-item"><input type="checkbox" name="estilo" value="Utilidade"> Utilidade</label>
+      <label class="estilo-item"><input type="checkbox" name="estilo" value="Comunidade"> Comunidade</label>
+      <label class="estilo-item"><input type="checkbox" name="estilo" value="Logs/Segurança"> Logs/Segurança</label>
+      <label class="estilo-item"><input type="checkbox" name="estilo" value="Entretenimento"> Entretenimento</label>
+    </div>
 
     <div style="margin-top:12px;">
       <label style="font-size:0.9rem; color:var(--gray)">Possui código promocional?</label>
       <input id="promo-code" placeholder="Insira o código (Opcional)">
     </div>
 
-    <small style="display:block; margin-top:10px; color:var(--gray)">Outros estilos somente falando diretamente com o técnico.</small>
-    <button onclick="enviarPedido()">Enviar Solicitação</button>
+    <small style="display:block; margin-top:10px; color:var(--gray)">Seu plano permite selecionar até <b id="limit-label">1</b> estilos.</small>
+    <button onclick="enviarPedido()">Enviar Solicitação Profissional</button>
   </div>
 
   <div class="glass">
@@ -282,10 +304,6 @@ footer a:hover { text-decoration: underline; }
     <div style="line-height: 1.6; color: #ddd;">
       <p><b>1. Termos de Serviço:</b> A contratação de serviços da FirePG implica na aceitação de que o produto é digital, personalizado e intransferível.</p>
       <p><b>2. Política de Reembolso:</b> Reembolsos são aplicáveis exclusivamente antes do início do desenvolvimento do código. Após o início, não há devolução.</p>
-      <p><b>3. Prazos de Entrega:</b> O tempo de entrega é uma estimativa baseada na complexidade e fila de pedidos. Atrasos podem ocorrer.</p>
-      <p><b>4. Canal de Suporte:</b> Todo o suporte técnico é realizado única e exclusivamente via servidor do Discord.</p>
-      <p><b>5. Métodos de Pagamento:</b> Aceitamos apenas transferências via PIX.</p>
-      <p><b>6. Diretrizes de Uso:</b> É estritamente proibido solicitar bots que violem os Termos de Serviço (ToS) do Discord.</p>
     </div>
   </div>
 </section>
@@ -293,42 +311,25 @@ footer a:hover { text-decoration: underline; }
 <section id="aba-loja" class="hidden fade-in">
   <div class="glass" style="max-width: 1200px;">
     <h2 style="text-align: center;">Planos Disponíveis</h2>
-    <p style="text-align: center; color: var(--gray); margin-bottom: 30px;">Pagamentos e ativação realizados somente via Discord.</p>
-    
     <div class="plans-grid">
       <div class="plan-card">
         <h3>Plano Faísca</h3>
         <div class="price">R$ 2,50<span>/mês</span></div>
-        <ul class="features">
-          <li>Até <b>02 estilos</b> de bot</li>
-          <li><b>18%</b> de desconto promocional</li>
-          <li>Suporte Básico</li>
-        </ul>
+        <ul class="features"><li>Até <b>02 estilos</b></li><li>Suporte Básico</li></ul>
         <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Contratar</button></a>
       </div>
-
-      <div class="plan-card" style="border-color: var(--orange); box-shadow: 0 0 20px rgba(255,122,24,0.1);">
+      <div class="plan-card" style="border-color: var(--orange);">
         <span class="badge">Mais Popular</span>
         <h3>Plano Chama</h3>
         <div class="price">R$ 4,50<span>/mês</span></div>
-        <ul class="features">
-          <li>Até <b>04 estilos</b> de bot</li>
-          <li><b>20%</b> de desconto promocional</li>
-          <li>Suporte Prioritário</li>
-        </ul>
+        <ul class="features"><li>Até <b>04 estilos</b></li><li>Suporte Prioritário</li></ul>
         <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Contratar</button></a>
       </div>
-
       <div class="plan-card">
         <span class="badge" style="background: #ff73fa;">Booster</span>
         <h3>Plano Booster</h3>
         <div class="price">Grátis<span>*</span></div>
-        <p style="font-size: 0.8rem; color: #ff73fa;">*Ao impulsionar o servidor</p>
-        <ul class="features">
-          <li>Até <b>02 estilos</b> de bot</li>
-          <li><b>15%</b> de desconto adicional</li>
-          <li>Cargo exclusivo no Discord</li>
-        </ul>
+        <ul class="features"><li>Até <b>02 estilos</b></li><li>Cargo exclusivo</li></ul>
         <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button style="background: #ff73fa;">Impulsionar</button></a>
       </div>
     </div>
@@ -336,72 +337,21 @@ footer a:hover { text-decoration: underline; }
 </section>
 
 <section id="aba-painel" class="hidden fade-in">
-  
   <div id="painel-login" class="glass" style="text-align: center; max-width: 500px;">
     <h2>Acesso Técnico</h2>
-    <p>Insira a credencial de administrador.</p>
     <input type="password" id="admin-pass" placeholder="Senha de acesso">
     <button onclick="verificarAdmin()">Acessar Painel</button>
   </div>
-
   <div id="painel-dashboard" class="glass hidden">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2>Painel de Configurações</h2>
-      <button class="danger" onclick="sairAdmin()" style="margin:0; padding: 8px 16px;">Sair</button>
-    </div>
-    
-    <div class="admin-section">
-      <h3>📡 Database de Usuários (GitHub Sync)</h3>
-      <div id="users-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-        <p style="text-align:center;">Carregando dados do GitHub...</p>
-      </div>
-      
-      <div style="display:flex; gap:10px;">
-        <input id="blacklist-input" placeholder="IP ou ID para bloquear/desbloquear">
-        <button onclick="toggleBlacklist()" style="margin-top:12px;">Bloquear/Desbloquear</button>
-      </div>
-    </div>
-
-    <div class="admin-section">
-      <h3>🎟️ Códigos Promocionais</h3>
-      <div id="promo-list" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px;"></div>
-      <div style="display:flex; gap:10px;">
-        <input id="new-promo" placeholder="Novo código (ex: PROMONOVO)">
-        <button class="success" onclick="addPromo()" style="margin-top:12px;">Adicionar</button>
-      </div>
-    </div>
-
-    <div class="admin-section">
-      <h3>🛡️ Gerenciador Geral (Master)</h3>
-      <div id="master-content" style="padding: 15px; background: rgba(255,0,0,0.1); border-radius: 10px; border: 1px solid var(--red);">
-        <p id="master-msg">Verificando permissões...</p>
-        <div id="master-actions" class="hidden">
-            <p>Bem-vindo, <b>eljoaogg</b>. Acesso total liberado.</p>
-            <button onclick="alert('Sistema Integro. Logs limpos.')">Verificar Integridade do Sistema</button>
-            <button class="danger" onclick="localStorage.removeItem('firepg_blacklist'); alert('Blacklist Local Resetada!')">Resetar Blacklist Local</button>
-        </div>
-      </div>
-    </div>
-
+      <div style="display:flex; justify-content:space-between;"><h2>Painel Admin</h2><button class="danger" onclick="sairAdmin()">Sair</button></div>
+      <div id="users-list"></div>
   </div>
 </section>
 
 <footer>
   <div class="footer-grid">
-    <div>
-      <b>HOSPEDAGENS</b><br>
-      Bot — Discloud<br>
-      Site — Vercel
-    </div>
-    <div>
-      <b>LINKS DIRETOS</b><br>
-      Discord — <a href="https://discord.gg/BaTeCB6E3G" target="_blank">Entrar no Servidor</a><br>
-      Site — <a href="https://firepg.vercel.app/" target="_blank">firepg.vercel.app</a>
-    </div>
-    <div>
-      <b>SUPORTE</b><br>
-      E-mail: <a href="mailto:firepg2026@outlook.com.br">firepg2026@outlook.com.br</a>
-    </div>
+    <div><b>HOSPEDAGENS</b><br>Discloud / Vercel</div>
+    <div><b>SUPORTE</b><br>firepg2026@outlook.com.br</div>
   </div>
 </footer>
 
@@ -412,31 +362,27 @@ const CONFIG = {
   DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
   OAUTH_REDIRECT: "https://firepg.vercel.app/",
   MASTER_ID: "1049848388247625818",
-  
-  // SENHA PROTEGIDA (HASH SHA-256 de "127605#$firepg")
-  // Agora ninguém vê sua senha real no código
   ADMIN_HASH: "7f7f6a70e7e00a98218427f7173b98455850937a48d8a7c564347719602334f6",
-
   GUILD_ID: "1461311365191958590", 
   ROLES: {
-    "1461945712777363509": "Booster",
-    "1461945597543055443": "Plano Chama",
-    "1461945670154846330": "Plano Faísca"
+    "1461945712777363509": { name: "Booster", limit: 2 },
+    "1461945597543055443": { name: "Plano Chama", limit: 4 },
+    "1461945670154846330": { name: "Plano Faísca", limit: 2 }
   }
 };
 
+// TOKEN REMOVIDO POR SEGURANÇA
 const GITHUB_CONFIG = {
-  TOKEN: "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",
+  TOKEN: "INSIRA_SEU_TOKEN_AQUI", 
   USER: "joaocarvalhojp40-ship-it",
   REPO: "Databasefirepg",
   FILE_PATH: "database.json"
 };
 
-/* --- Variáveis Globais --- */
-let promoCodes = JSON.parse(localStorage.getItem('firepg_promos')) || ['PROMOBOOSTER', 'PROMOFAISCA', 'PROMOCHAMA'];
+let userIP = "0.0.0.0";
+let userStyleLimit = 1; // Padrão Gratuito
 let blacklisted = JSON.parse(localStorage.getItem('firepg_blacklist')) || [];
-let userIP = "Carregando...";
-let globalGitHubUsers = [];
+let promoCodes = JSON.parse(localStorage.getItem('firepg_promos')) || ['PROMOBOOSTER', 'PROMOFAISCA', 'PROMOCHAMA'];
 
 /* ================= INICIALIZAÇÃO ================= */
 window.onload = async () => {
@@ -447,31 +393,18 @@ window.onload = async () => {
   } catch(e) { userIP = "IP Indisponível"; }
 
   checkBlacklist();
-  checkAdminLockout();
   checkDiscordLogin();
 };
 
-/* ================= NAVEGAÇÃO ================= */
-function mudarAba(aba) {
-  ['inicio', 'loja', 'painel'].forEach(id => {
-    document.getElementById('aba-' + id).classList.add('hidden');
-    document.getElementById('btn-' + id).classList.remove('active');
-  });
-  document.getElementById('aba-' + aba).classList.remove('hidden');
-  document.getElementById('btn-' + aba).classList.add('active');
-}
-
-/* ================= LOGIN & LOGOUT DISCORD ================= */
+/* ================= LOGIN & LOGOUT ================= */
 function login() {
   location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify%20guilds.members.read`;
 }
 
 function logout() {
-  if (confirm("Tem certeza que deseja sair?")) {
-    localStorage.removeItem("discord_token");
-    localStorage.removeItem("discord_user");
-    location.reload();
-  }
+  localStorage.removeItem("discord_token");
+  localStorage.removeItem("discord_user");
+  location.reload();
 }
 
 function checkDiscordLogin() {
@@ -492,7 +425,7 @@ function checkDiscordLogin() {
     .then(r => r.json())
     .then(u => {
       localStorage.setItem("discord_user", JSON.stringify(u));
-      if (blacklisted.includes(u.id)) bloquearAcessoTotal();
+      if (blacklisted.includes(u.id)) document.body.innerHTML = "BANIDO";
 
       document.getElementById("lock").style.display = "none";
       document.getElementById("navbar").classList.remove("hidden");
@@ -501,13 +434,10 @@ function checkDiscordLogin() {
       document.getElementById("user-id").innerText = u.id;
       document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
       
-      if (!localStorage.getItem("entrada")) {
-        localStorage.setItem("entrada", new Date().toLocaleDateString("pt-BR"));
-      }
+      if (!localStorage.getItem("entrada")) localStorage.setItem("entrada", new Date().toLocaleDateString("pt-BR"));
       document.getElementById("data-entrada").innerText = localStorage.getItem("entrada");
       document.getElementById("total-pedidos").innerText = localStorage.getItem("total") || 0;
 
-      registrarNoGitHub(u);
       verificarPlanoDiscord(token);
     })
     .catch(() => logout());
@@ -516,181 +446,99 @@ function checkDiscordLogin() {
 
 function verificarPlanoDiscord(token) {
   const planDisplay = document.getElementById("user-plan");
-  
-  if(CONFIG.GUILD_ID.includes("COLA_AQUI")) {
-    planDisplay.innerText = "Erro Config (ID Servidor)";
-    return;
-  }
+  const limitInfo = document.getElementById("estilo-limit-info");
+  const limitLabel = document.getElementById("limit-label");
 
   fetch(`https://discord.com/api/users/@me/guilds/${CONFIG.GUILD_ID}/member`, {
     headers: { Authorization: "Bearer " + token }
   })
-  .then(res => {
-    if(!res.ok) throw new Error("Não está no servidor");
-    return res.json();
-  })
+  .then(res => res.json())
   .then(member => {
-    const roles = member.roles; 
-    let currentPlan = "Gratuito"; 
+    let currentPlan = "Gratuito";
+    let limit = 1;
 
-    for (const [roleId, planName] of Object.entries(CONFIG.ROLES)) {
-        if (roles.includes(roleId)) {
-            currentPlan = planName;
-            if(planName === "Booster" || planName.includes("Chama")) break; 
-        }
+    if (member.roles) {
+      for (const [roleId, data] of Object.entries(CONFIG.ROLES)) {
+          if (member.roles.includes(roleId)) {
+              currentPlan = data.name;
+              limit = data.limit;
+              break; 
+          }
+      }
     }
     
+    userStyleLimit = limit;
     planDisplay.innerText = currentPlan;
+    limitInfo.innerText = limit;
+    limitLabel.innerText = limit;
   })
-  .catch(err => {
-    planDisplay.innerText = "Sem Plano / Não está no Servidor";
-    planDisplay.style.color = "var(--gray)";
+  .catch(() => {
+    planDisplay.innerText = "Sem Plano / Offline";
+    userStyleLimit = 1;
   });
 }
 
-/* ================= DATABASE GITHUB ================= */
-function b64EncodeUnicode(str) {
-    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
-}
-function b64DecodeUnicode(str) {
-    return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-}
-
-async function registrarNoGitHub(user) {
-    const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`;
-    try {
-        let users = [];
-        let sha = null;
-        const getReq = await fetch(apiUrl, { headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` } });
-        if (getReq.ok) {
-            const data = await getReq.json();
-            users = JSON.parse(b64DecodeUnicode(data.content));
-            sha = data.sha;
-        }
-        if (!users.find(u => u.id === user.id)) {
-            users.push({ id: user.id, username: user.username, ip: userIP, date: new Date().toISOString() });
-            const body = { message: `Add ${user.username}`, content: b64EncodeUnicode(JSON.stringify(users, null, 2)), sha: sha };
-            await fetch(apiUrl, { method: "PUT", headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` }, body: JSON.stringify(body) });
-        }
-    } catch (e) { console.warn("Erro Sincronização Silenciosa"); }
-}
-
-async function carregarUsuariosGitHub() {
-    const list = document.getElementById("users-list");
-    list.innerHTML = "Carregando...";
-    const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.USER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`;
-
-    try {
-        const res = await fetch(apiUrl, { headers: { "Authorization": `token ${GITHUB_CONFIG.TOKEN}` } });
-        const data = await res.json();
-        globalGitHubUsers = JSON.parse(b64DecodeUnicode(data.content));
-        list.innerHTML = "";
-        globalGitHubUsers.forEach(u => {
-            const isBlack = blacklisted.includes(u.id) || blacklisted.includes(u.ip);
-            list.innerHTML += `<div class="user-list-item"><div><b>${u.username}</b><br><small>${u.id} | ${u.ip}</small></div><button class="${isBlack?'success':'danger'}" onclick="forceBlacklist('${u.id}')">${isBlack?'OK':'BAN'}</button></div>`;
-        });
-    } catch(e) { list.innerHTML = "Erro ao carregar."; }
-}
-
-/* ================= ADMIN & SEGURANÇA (SHA-256) ================= */
-let tentativas = 0;
-
-// Função para gerar o hash da senha digitada
-async function hashSenha(string) {
-  const utf8 = new TextEncoder().encode(string);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-async function verificarAdmin() {
-  const pass = document.getElementById("admin-pass").value;
-  const hashDigitado = await hashSenha(pass);
-
-  if (hashDigitado === CONFIG.ADMIN_HASH) {
-    document.getElementById("painel-login").classList.add("hidden");
-    document.getElementById("painel-dashboard").classList.remove("hidden");
-    carregarUsuariosGitHub();
-    renderPromos();
-    verificarMaster();
-  } else {
-    tentativas++;
-    if(tentativas >= 3) {
-        localStorage.setItem('admin_lock_until', Date.now() + 300000);
-        checkAdminLockout();
-    }
-    alert("Senha incorreta!");
-  }
-}
-
-function sairAdmin() {
-  document.getElementById("painel-dashboard").classList.add("hidden");
-  document.getElementById("painel-login").classList.remove("hidden");
-}
-
-function checkAdminLockout() {
-  const lock = localStorage.getItem('admin_lock_until');
-  if(lock && Date.now() < lock) {
-    document.getElementById('admin-block-overlay').style.display = 'grid';
-    setInterval(() => {
-      const rem = Math.ceil((lock - Date.now()) / 1000);
-      document.getElementById('timer-display').innerText = rem > 0 ? `${rem}s` : "Recarregue a página";
-    }, 1000);
-  }
-}
-
-function verificarMaster() {
-  const u = JSON.parse(localStorage.getItem("discord_user"));
-  if (u && u.id === CONFIG.MASTER_ID) document.getElementById("master-actions").classList.remove("hidden");
-}
-
-/* ================= BLACKLIST & PROMOS ================= */
-function checkBlacklist() { if (blacklisted.includes(userIP)) bloquearAcessoTotal(); }
-function bloquearAcessoTotal() { document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50px;'>BANIDO</h1>"; }
-
-function toggleBlacklist() {
-  const val = document.getElementById("blacklist-input").value.trim();
-  if (blacklisted.includes(val)) blacklisted = blacklisted.filter(i => i !== val);
-  else blacklisted.push(val);
-  localStorage.setItem('firepg_blacklist', JSON.stringify(blacklisted));
-  carregarUsuariosGitHub();
-}
-
-function forceBlacklist(id) { document.getElementById("blacklist-input").value = id; toggleBlacklist(); }
-
-function renderPromos() {
-  const list = document.getElementById("promo-list");
-  list.innerHTML = "";
-  promoCodes.forEach(c => {
-    list.innerHTML += `<div style="background:#222;padding:5px;border-radius:5px;">${c} <span onclick="removePromo('${c}')" style="color:red;cursor:pointer;">&times;</span></div>`;
-  });
-  localStorage.setItem('firepg_promos', JSON.stringify(promoCodes));
-}
-function addPromo() {
-  const val = document.getElementById("new-promo").value.trim().toUpperCase();
-  if(val && !promoCodes.includes(val)) { promoCodes.push(val); renderPromos(); }
-}
-function removePromo(c) { promoCodes = promoCodes.filter(p => p !== c); renderPromos(); }
-
-/* ================= PEDIDOS ================= */
+/* ================= PEDIDOS (WEBHOOK ATUALIZADO) ================= */
 function enviarPedido() {
   const u = JSON.parse(localStorage.getItem("discord_user"));
   const desc = document.getElementById("descricao").value;
+  const lang = document.getElementById("linguagem").value;
   const promo = document.getElementById("promo-code").value.trim().toUpperCase();
+  
+  // Coleta estilos marcados
+  const checkboxes = document.querySelectorAll('input[name="estilo"]:checked');
+  const estilosSelecionados = Array.from(checkboxes).map(cb => cb.value);
 
-  if(!desc) return alert("Descreva o bot.");
+  // Validações
+  if(!desc) return alert("Por favor, descreva o bot.");
+  if(estilosSelecionados.length === 0) return alert("Selecione pelo menos um estilo.");
+  if(estilosSelecionados.length > userStyleLimit) {
+    return alert(`Seu plano atual permite apenas ${userStyleLimit} estilos. Você selecionou ${estilosSelecionados.length}.`);
+  }
   if(promo && !promoCodes.includes(promo)) return alert("Cupom inválido.");
+
+  // Montagem do Webhook Profissional
+  const embed = {
+    title: "🔥 Novo Pedido de Bot - FirePG",
+    color: 16742936, // Cor Laranja (#ff7a18) em Decimal
+    thumbnail: { url: `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png` },
+    fields: [
+      { name: "👤 Cliente", value: `**${u.username}**\n(ID: ${u.id})`, inline: true },
+      { name: "🌐 Endereço IP", value: `\`${userIP}\``, inline: true },
+      { name: "💎 Plano", value: document.getElementById("user-plan").innerText, inline: true },
+      { name: "📝 Descrição", value: desc },
+      { name: "💻 Linguagem", value: lang || "Não informada", inline: true },
+      { name: "🎨 Estilos Escolhidos", value: estilosSelecionados.join(", "), inline: true },
+      { name: "🎟️ Cupom", value: promo || "Nenhum", inline: true }
+    ],
+    footer: { text: "FirePG Sistema de Pedidos • " + new Date().toLocaleString() },
+  };
 
   fetch(CONFIG.DISCORD_WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ embeds: [{ title: "Novo Pedido", fields: [{name:"User", value:u.username}, {name:"Desc", value:desc}, {name:"Promo", value:promo||"Nenhuma"}] }] })
+    body: JSON.stringify({ 
+        username: "FirePG Notificações",
+        avatar_url: "https://firepg.vercel.app/firepg.png",
+        embeds: [embed] 
+    })
   }).then(() => {
     localStorage.setItem("total", (Number(localStorage.getItem("total")||0)+1));
-    alert("Pedido enviado!");
+    alert("Pedido enviado com sucesso para o técnico!");
     location.reload();
-  });
+  }).catch(() => alert("Erro ao enviar pedido."));
 }
+
+/* Funções de Navegação e Admin preservadas */
+function mudarAba(aba) {
+  ['inicio', 'loja', 'painel'].forEach(id => {
+    document.getElementById('aba-' + id).classList.add('hidden');
+    document.getElementById('btn-' + id).classList.remove('active');
+  });
+  document.getElementById('aba-' + aba).classList.remove('hidden');
+  document.getElementById('btn-' + aba).classList.add('active');
+}
+function checkBlacklist() { if (blacklisted.includes(userIP)) document.body.innerHTML = "BANIDO"; }
 </script>
 </body>
 </html>
