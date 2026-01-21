@@ -9,7 +9,7 @@
 <meta property="og:description" content="Solicite bots personalizados para o seu servidor de Discord com a melhor qualidade.">
 <meta property="og:image" content="firepg.png">
 <meta property="og:url" content="https://firepg.vercel.app/">
-<meta theme-color content="#ff7a18">
+<meta name="theme-color" content="#ff7a18">
 
 <link rel="icon" type="image/png" href="firepg.png">
 
@@ -59,6 +59,7 @@ nav button {
   background: transparent;
   border: 1px solid transparent;
   color: var(--gray);
+  cursor: pointer;
 }
 
 nav button.active {
@@ -130,7 +131,7 @@ button.success { background: var(--green); }
   backdrop-filter:blur(10px);
   display:flex;
   align-items:center;
-  justify-content:center;
+  justify(content):center;
   z-index:999;
 }
 .lock-box{
@@ -148,7 +149,7 @@ button.success { background: var(--green); }
 .user-info h2 { margin: 0; }
 .user-info p { margin: 5px 0; color: var(--gray); font-size: 0.9rem; }
 
-/* ===== ESTILOS SELEÇÃO (NOVO) ===== */
+/* ===== ESTILOS SELEÇÃO ===== */
 .estilos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -182,8 +183,6 @@ button.success { background: var(--green); }
 /* ===== ADMIN PAINEL ===== */
 .admin-section { border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px; }
 .user-list-item { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 10px; border-radius: 8px; margin-bottom: 5px; }
-.tag { padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-.tag-ip { background: #333; color: #aaa; }
 
 /* ===== AVALIAÇÕES ===== */
 .review-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
@@ -230,7 +229,6 @@ footer a:hover { text-decoration: underline; }
 <p class="subtitle">Bots profissionais para Discord</p>
 
 <section id="aba-inicio" class="fade-in">
-  
   <div class="glass" id="perfil-container">
     <div class="profile-header">
       <img id="avatar" class="avatar" src="">
@@ -238,10 +236,8 @@ footer a:hover { text-decoration: underline; }
         <h2 id="user-name">Carregando...</h2>
         <p>ID: <span id="user-id">...</span></p>
         <p>Membro desde: <b id="data-entrada"></b></p>
-        
         <p>Plano Atual: <b id="user-plan" style="color:var(--orange); text-transform: uppercase;">Verificando...</b></p>
         <p>Limite de Estilos: <b id="estilo-limit-info" style="color:var(--green)">1</b></p>
-        
         <p>Solicitações: <b id="total-pedidos">0</b></p>
       </div>
     </div>
@@ -256,7 +252,7 @@ footer a:hover { text-decoration: underline; }
     <input id="descricao" placeholder="Descrição detalhada do bot">
     <input id="linguagem" placeholder="Linguagem (JS, Java, Python)">
 
-    <p style="margin-top:20px; font-weight:bold;">Escolha os Estilos (conforme seu plano):</p>
+    <p style="margin-top:20px; font-weight:bold;">Escolha os Estilos:</p>
     <div class="estilos-grid" id="grid-estilos">
       <label class="estilo-item"><input type="checkbox" name="estilo" value="Moderação"> Moderação</label>
       <label class="estilo-item"><input type="checkbox" name="estilo" value="Economia"> Economia</label>
@@ -278,32 +274,9 @@ footer a:hover { text-decoration: underline; }
   <div class="glass">
     <h2>Avaliações Recentes</h2>
     <div class="review-grid">
-      <div class="review">
-        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Jorge">
-        <b>Julieta</b>
-        <p>★★★★☆ 4,5</p>
-        <small>Atendimento rápido e bot muito bem feito.</small>
-      </div>
-      <div class="review">
-        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Maria">
-        <b>Maria</b>
-        <p>★★★★☆ 4,0</p>
-        <small>Gostei bastante da qualidade e suporte.</small>
-      </div>
-      <div class="review">
-        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Augusto">
-        <b>Augusto</b>
-        <p>★★★★★ 5,0</p>
-        <small>Excelente, superou minhas expectativas.</small>
-      </div>
-    </div>
-  </div>
-
-  <div class="glass">
-    <h2>Documentação Oficial</h2>
-    <div style="line-height: 1.6; color: #ddd;">
-      <p><b>1. Termos de Serviço:</b> A contratação de serviços da FirePG implica na aceitação de que o produto é digital, personalizado e intransferível.</p>
-      <p><b>2. Política de Reembolso:</b> Reembolsos são aplicáveis exclusivamente antes do início do desenvolvimento do código. Após o início, não há devolução.</p>
+      <div class="review"><img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Jorge"><b>Julieta</b><p>★★★★☆ 4,5</p><small>Atendimento rápido e bot muito bem feito.</small></div>
+      <div class="review"><img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Maria"><b>Maria</b><p>★★★★☆ 4,0</p><small>Gostei bastante da qualidade e suporte.</small></div>
+      <div class="review"><img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Augusto"><b>Augusto</b><p>★★★★★ 5,0</p><small>Excelente, superou minhas expectativas.</small></div>
     </div>
   </div>
 </section>
@@ -325,13 +298,6 @@ footer a:hover { text-decoration: underline; }
         <ul class="features"><li>Até <b>04 estilos</b></li><li>Suporte Prioritário</li></ul>
         <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button>Contratar</button></a>
       </div>
-      <div class="plan-card">
-        <span class="badge" style="background: #ff73fa;">Booster</span>
-        <h3>Plano Booster</h3>
-        <div class="price">Grátis<span>*</span></div>
-        <ul class="features"><li>Até <b>02 estilos</b></li><li>Cargo exclusivo</li></ul>
-        <a href="https://discord.gg/BaTeCB6E3G" target="_blank"><button style="background: #ff73fa;">Impulsionar</button></a>
-      </div>
     </div>
   </div>
 </section>
@@ -343,39 +309,34 @@ footer a:hover { text-decoration: underline; }
     <button onclick="verificarAdmin()">Acessar Painel</button>
   </div>
   <div id="painel-dashboard" class="glass hidden">
-      <div style="display:flex; justify-content:space-between;"><h2>Painel Admin</h2><button class="danger" onclick="sairAdmin()">Sair</button></div>
-      <div id="users-list"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <h2>Painel Admin</h2>
+        <button class="danger" onclick="sairAdmin()">Sair</button>
+      </div>
+      <div class="admin-section">
+          <h3>Adicionar Novo Cupom Global</h3>
+          <input id="new-promo-code" placeholder="EX: PROMO2026">
+          <button class="success" onclick="adminAddCupom()">Salvar na Database</button>
+      </div>
+      <div id="users-list" class="admin-section"></div>
   </div>
 </section>
 
 <footer>
   <div class="footer-grid">
-    <div>
-      <b>HOSPEDAGENS</b><br>
-      Bot — Discloud<br>
-      Site — Vercel
-    </div>
-    <div>
-      <b>LINKS DIRETOS</b><br>
-      Discord — <a href="https://discord.gg/BaTeCB6E3G" target="_blank">Entrar no Servidor</a><br>
-      Site — <a href="https://firepg.vercel.app/" target="_blank">firepg.vercel.app</a>
-    </div>
-    <div>
-      <b>SUPORTE</b><br>
-      E-mail: <a href="mailto:firepg2026@outlook.com.br">firepg2026@outlook.com.br</a>
-    </div>
+    <div><b>HOSPEDAGENS</b><br>Bot — Discloud<br>Site — Vercel</div>
+    <div><b>LINKS</b><br>Discord — <a href="https://discord.gg/BaTeCB6E3G" target="_blank">Entrar</a></div>
+    <div><b>SUPORTE</b><br><a href="mailto:firepg2026@outlook.com.br">firepg2026@outlook.com.br</a></div>
   </div>
 </footer>
 
-
 <script>
 /* ================= CONFIGURAÇÕES ================= */
+const API_URL = "https://SUA-API-NO-RENDER.onrender.com"; // <--- COLOQUE SUA URL DO RENDER AQUI
+
 const CONFIG = {
   DISCORD_CLIENT_ID: "1461307002570412084",
-  DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1461334091159834698/cw_4iza4UfjFRGaiFufyFOsJmpdOvLatTFqPREUIIXioeZhjvf3e-Qw5T3-98jphDMIY",
   OAUTH_REDIRECT: "https://firepg.vercel.app/",
-  MASTER_ID: "1049848388247625818",
-  ADMIN_HASH: "7f7f6a70e7e00a98218427f7173b98455850937a48d8a7c564347719602334f6",
   GUILD_ID: "1461311365191958590", 
   ROLES: {
     "1461945712777363509": { name: "Booster", limit: 2 },
@@ -384,39 +345,36 @@ const CONFIG = {
   }
 };
 
-// TOKEN REMOVIDO POR SEGURANÇA
-const GITHUB_CONFIG = {
-  TOKEN: "INSIRA_SEU_TOKEN_AQUI", 
-  USER: "joaocarvalhojp40-ship-it",
-  REPO: "Databasefirepg",
-  FILE_PATH: "database.json"
-};
-
 let userIP = "0.0.0.0";
-let userStyleLimit = 1; // Padrão Gratuito
-let blacklisted = JSON.parse(localStorage.getItem('firepg_blacklist')) || [];
-let promoCodes = JSON.parse(localStorage.getItem('firepg_promos')) || ['PROMOBOOSTER', 'PROMOFAISCA', 'PROMOCHAMA'];
+let userStyleLimit = 1;
+let globalCoupons = [];
 
 /* ================= INICIALIZAÇÃO ================= */
 window.onload = async () => {
+  // 1. Pegar IP
   try {
     const res = await fetch('https://api.ipify.org?format=json');
     const data = await res.json();
     userIP = data.ip;
   } catch(e) { userIP = "IP Indisponível"; }
 
-  checkBlacklist();
+  // 2. Carregar Cupons Globais do Render/GitHub
+  try {
+    const res = await fetch(`${API_URL}/api/data`);
+    const db = await res.json();
+    globalCoupons = db.coupons;
+  } catch(e) { console.error("Erro ao carregar DB global"); }
+
   checkDiscordLogin();
 };
 
-/* ================= LOGIN & LOGOUT ================= */
+/* ================= LOGIN & DISCORD ================= */
 function login() {
   location.href = `https://discord.com/oauth2/authorize?client_id=${CONFIG.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(CONFIG.OAUTH_REDIRECT)}&response_type=token&scope=identify%20guilds.members.read`;
 }
 
 function logout() {
-  localStorage.removeItem("discord_token");
-  localStorage.removeItem("discord_user");
+  localStorage.clear();
   location.reload();
 }
 
@@ -424,25 +382,17 @@ function checkDiscordLogin() {
   if (location.hash) {
     const p = new URLSearchParams(location.hash.substring(1));
     const t = p.get("access_token");
-    if (t) {
-      localStorage.setItem("discord_token", t);
-      history.replaceState(null, null, location.pathname);
-    }
+    if (t) { localStorage.setItem("discord_token", t); history.replaceState(null, null, location.pathname); }
   }
 
   const token = localStorage.getItem("discord_token");
   if (token) {
-    fetch("https://discord.com/api/users/@me", {
-      headers: { Authorization: "Bearer " + token }
-    })
+    fetch("https://discord.com/api/users/@me", { headers: { Authorization: "Bearer " + token } })
     .then(r => r.json())
     .then(u => {
       localStorage.setItem("discord_user", JSON.stringify(u));
-      if (blacklisted.includes(u.id)) document.body.innerHTML = "BANIDO";
-
       document.getElementById("lock").style.display = "none";
       document.getElementById("navbar").classList.remove("hidden");
-      
       document.getElementById("user-name").innerText = u.username;
       document.getElementById("user-id").innerText = u.id;
       document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
@@ -452,97 +402,99 @@ function checkDiscordLogin() {
       document.getElementById("total-pedidos").innerText = localStorage.getItem("total") || 0;
 
       verificarPlanoDiscord(token);
-    })
-    .catch(() => logout());
+    }).catch(() => logout());
   }
 }
 
 function verificarPlanoDiscord(token) {
-  const planDisplay = document.getElementById("user-plan");
-  const limitInfo = document.getElementById("estilo-limit-info");
-  const limitLabel = document.getElementById("limit-label");
-
-  fetch(`https://discord.com/api/users/@me/guilds/${CONFIG.GUILD_ID}/member`, {
-    headers: { Authorization: "Bearer " + token }
-  })
+  fetch(`https://discord.com/api/users/@me/guilds/${CONFIG.GUILD_ID}/member`, { headers: { Authorization: "Bearer " + token } })
   .then(res => res.json())
   .then(member => {
-    let currentPlan = "Gratuito";
-    let limit = 1;
-
+    let plan = "Gratuito", limit = 1;
     if (member.roles) {
       for (const [roleId, data] of Object.entries(CONFIG.ROLES)) {
-          if (member.roles.includes(roleId)) {
-              currentPlan = data.name;
-              limit = data.limit;
-              break; 
-          }
+        if (member.roles.includes(roleId)) { plan = data.name; limit = data.limit; break; }
       }
     }
-    
     userStyleLimit = limit;
-    planDisplay.innerText = currentPlan;
-    limitInfo.innerText = limit;
-    limitLabel.innerText = limit;
-  })
-  .catch(() => {
-    planDisplay.innerText = "Sem Plano / Offline";
-    userStyleLimit = 1;
+    document.getElementById("user-plan").innerText = plan;
+    document.getElementById("estilo-limit-info").innerText = limit;
+    document.getElementById("limit-label").innerText = limit;
   });
 }
 
-/* ================= PEDIDOS (WEBHOOK ATUALIZADO) ================= */
-function enviarPedido() {
-  const u = JSON.parse(localStorage.getItem("discord_user"));
+/* ================= PEDIDOS (SEGURO VIA RENDER) ================= */
+async function enviarPedido() {
   const desc = document.getElementById("descricao").value;
   const lang = document.getElementById("linguagem").value;
   const promo = document.getElementById("promo-code").value.trim().toUpperCase();
+  const selecionados = Array.from(document.querySelectorAll('input[name="estilo"]:checked')).map(cb => cb.value);
+
+  if(!desc) return alert("Descreva o bot.");
+  if(selecionados.length === 0) return alert("Selecione um estilo.");
+  if(selecionados.length > userStyleLimit) return alert("Limite de estilos excedido!");
   
-  // Coleta estilos marcados
-  const checkboxes = document.querySelectorAll('input[name="estilo"]:checked');
-  const estilosSelecionados = Array.from(checkboxes).map(cb => cb.value);
+  // Valida cupom contra a lista que veio do GitHub
+  if(promo && !globalCoupons.includes(promo)) return alert("Cupom inválido.");
 
-  // Validações
-  if(!desc) return alert("Por favor, descreva o bot.");
-  if(estilosSelecionados.length === 0) return alert("Selecione pelo menos um estilo.");
-  if(estilosSelecionados.length > userStyleLimit) {
-    return alert(`Seu plano atual permite apenas ${userStyleLimit} estilos. Você selecionou ${estilosSelecionados.length}.`);
-  }
-  if(promo && !promoCodes.includes(promo)) return alert("Cupom inválido.");
+  const user = JSON.parse(localStorage.getItem("discord_user"));
 
-  // Montagem do Webhook Profissional
-  const embed = {
-    title: "🔥 Novo Pedido de Bot - FirePG",
-    color: 16742936, // Cor Laranja (#ff7a18) em Decimal
-    thumbnail: { url: `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png` },
-    fields: [
-      { name: "👤 Cliente", value: `**${u.username}**\n(ID: ${u.id})`, inline: true },
-      { name: "🌐 Endereço IP", value: `\`${userIP}\``, inline: true },
-      { name: "💎 Plano", value: document.getElementById("user-plan").innerText, inline: true },
-      { name: "📝 Descrição", value: desc },
-      { name: "💻 Linguagem", value: lang || "Não informada", inline: true },
-      { name: "🎨 Estilos Escolhidos", value: estilosSelecionados.join(", "), inline: true },
-      { name: "🎟️ Cupom", value: promo || "Nenhum", inline: true }
-    ],
-    footer: { text: "FirePG Sistema de Pedidos • " + new Date().toLocaleString() },
-  };
+  // Envia para o Render (que tem o Webhook escondido)
+  try {
+    const res = await fetch(`${API_URL}/api/pedido`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user: { username: user.username, id: user.id, avatar: user.avatar },
+        pedido: { desc, lang, estilos: selecionados, promo, ip: userIP }
+      })
+    });
 
-  fetch(CONFIG.DISCORD_WEBHOOK_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ 
-        username: "FirePG Notificações",
-        avatar_url: "https://firepg.vercel.app/firepg.png",
-        embeds: [embed] 
-    })
-  }).then(() => {
-    localStorage.setItem("total", (Number(localStorage.getItem("total")||0)+1));
-    alert("Pedido enviado com sucesso para o técnico!");
-    location.reload();
-  }).catch(() => alert("Erro ao enviar pedido."));
+    if(res.ok) {
+      localStorage.setItem("total", (Number(localStorage.getItem("total")||0)+1));
+      alert("Pedido enviado com segurança!");
+      location.reload();
+    }
+  } catch(e) { alert("Erro ao conectar com o servidor."); }
 }
 
-/* Funções de Navegação e Admin preservadas */
+/* ================= ADMIN (SEGURO VIA RENDER) ================= */
+async function verificarAdmin() {
+  const password = document.getElementById("admin-pass").value;
+  
+  // O Render checa a senha contra a variável de ambiente
+  try {
+    const res = await fetch(`${API_URL}/api/admin/add-coupon`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, code: "CHECK_ONLY" }) 
+    });
+
+    if (res.status !== 403) {
+      document.getElementById("painel-login").classList.add("hidden");
+      document.getElementById("painel-dashboard").classList.remove("hidden");
+    } else {
+      alert("Senha incorreta.");
+    }
+  } catch(e) { alert("Erro de conexão."); }
+}
+
+async function adminAddCupom() {
+    const password = document.getElementById("admin-pass").value;
+    const code = document.getElementById("new-promo-code").value.trim().toUpperCase();
+
+    const res = await fetch(`${API_URL}/api/admin/add-coupon`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, code })
+    });
+
+    if(res.ok) {
+        alert("Cupom salvo no GitHub com sucesso!");
+        location.reload();
+    }
+}
+
 function mudarAba(aba) {
   ['inicio', 'loja', 'painel'].forEach(id => {
     document.getElementById('aba-' + id).classList.add('hidden');
@@ -551,7 +503,7 @@ function mudarAba(aba) {
   document.getElementById('aba-' + aba).classList.remove('hidden');
   document.getElementById('btn-' + aba).classList.add('active');
 }
-function checkBlacklist() { if (blacklisted.includes(userIP)) document.body.innerHTML = "BANIDO"; }
+function sairAdmin() { location.reload(); }
 </script>
 </body>
 </html>
